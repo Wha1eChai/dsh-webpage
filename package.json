@@ -1,0 +1,38 @@
+{
+  "name": "@wha1echai/dsh-webpage-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "scripts": {
+    "build": "corepack pnpm@11.7.0 -r --if-present --sort run build",
+    "typecheck": "tsc -b tsconfig.json && tsc --noEmit -p tests/integration/tsconfig.json && tsc --noEmit -p tests/public-contract/tsconfig.json",
+    "lint": "node scripts/phase1-check.mjs --lint",
+    "test:unit": "node scripts/phase1-check.mjs --unit && vitest run --coverage && vitest run --config examples/reference-app/vitest.config.ts && vitest run --config examples/reference-extension/vitest.config.ts && node examples/reference-pack/scripts/validate-patch.mjs",
+    "test:integration": "corepack pnpm@11.7.0 run build && vitest run --config vitest.integration.config.ts",
+    "test:browser": "node scripts/phase5-browser.mjs",
+    "test:hmr": "node scripts/phase5-hmr.mjs",
+    "pack:verify": "node scripts/phase1-check.mjs --pack && node scripts/phase4-pack-verify.mjs && node scripts/phase5-packed-install.mjs",
+    "verify": "corepack pnpm@11.7.0 run typecheck && corepack pnpm@11.7.0 run lint && corepack pnpm@11.7.0 run build && corepack pnpm@11.7.0 run test:unit && corepack pnpm@11.7.0 run test:integration && corepack pnpm@11.7.0 run pack:verify && corepack pnpm@11.7.0 run test:browser && corepack pnpm@11.7.0 run test:hmr"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis-plugin-loader": "1.0.2",
+    "@deepseek-ai/dsh-client-modules": "0.1.0-rc.6",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "22.20.0",
+    "@types/react": "18.3.1",
+    "@types/react-dom": "18.3.1",
+    "@vitest/coverage-v8": "4.1.8",
+    "jsdom": "29.1.1",
+    "lightningcss": "1.32.0",
+    "playwright": "1.61.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tsdown": "0.22.2",
+    "typescript": "6.0.3",
+    "vitest": "4.1.8"
+  }
+}

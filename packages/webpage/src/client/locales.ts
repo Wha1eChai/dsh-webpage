@@ -1,0 +1,46 @@
+/** Webpage product copy: Chinese is the default and English is complete. */
+export const zh = Object.freeze({
+  apps: '应用',
+  close: '关闭应用',
+  unavailableTitle: '应用不可用',
+  unavailableDescription: '该应用未安装，或其界面插件当前不可用。',
+  inspectorTitle: '应用检查器',
+  inspectorDescription: '查看已注册应用及其扩展结构。',
+  appId: '应用 ID',
+  appDescription: '描述',
+  order: '排序',
+  sourcePlugin: '来源插件',
+  url: '地址',
+  slotStatus: '界面状态',
+  available: '可用',
+  missing: '缺失',
+  unknown: '未知',
+  categories: '分类',
+  noApps: '没有已注册的应用。',
+  extensionTree: '扩展结构',
+  openApp: '打开应用',
+})
+
+export const en = Object.freeze({
+  apps: 'Apps',
+  close: 'Close app',
+  unavailableTitle: 'App unavailable',
+  unavailableDescription: 'This App is not installed, or its UI plugin is currently unavailable.',
+  inspectorTitle: 'App Inspector',
+  inspectorDescription: 'Inspect registered Apps and their extension topology.',
+  appId: 'App ID',
+  appDescription: 'Description',
+  order: 'Order',
+  sourcePlugin: 'Source plugin',
+  url: 'URL',
+  slotStatus: 'UI status',
+  available: 'Available',
+  missing: 'Missing',
+  unknown: 'Unknown',
+  categories: 'Categories',
+  noApps: 'No Apps are registered.',
+  extensionTree: 'Extension topology',
+  openApp: 'Open App',
+})
+
+export type WebpageLocaleKey = keyof typeof zh

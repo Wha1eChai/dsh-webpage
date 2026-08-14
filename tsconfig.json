@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/webpage" },
+    { "path": "./examples/reference-app" },
+    { "path": "./examples/reference-extension" },
+    { "path": "./examples/reference-pack" }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "ignoreDeprecations": "6.0",
+    "baseUrl": "../..",
+    "paths": {
+      "@deepseek-ai/dsh-client-runtime/client": ["packages/webpage/node_modules/@deepseek-ai/dsh-client-runtime/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-layout/client": ["packages/webpage/node_modules/@deepseek-ai/dsh-client-ui-layout/lib/types/client/index.d.ts"],
+      "@deepseek-ai/cordis": ["packages/webpage/node_modules/@deepseek-ai/cordis/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-slots": ["packages/webpage/node_modules/@deepseek-ai/dsh-client-ui-slots/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-web-react": ["packages/webpage/node_modules/@deepseek-ai/dsh-client-web-react/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-primitives": ["packages/webpage/node_modules/@deepseek-ai/dsh-client-ui-primitives/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-attachment": ["packages/webpage/node_modules/@deepseek-ai/dsh-client-ui-attachment/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-schema-form": ["packages/webpage/node_modules/@deepseek-ai/dsh-client-schema-form/lib/types/index.d.ts"]
+    }
+  },
+  "files": [
+    "loader-support.ts",
+    "phase3-loader.spec.ts",
+    "phase4-reference-loader.spec.ts",
+    "../fixtures/phase3-loader/build.ts",
+    "../fixtures/phase3-loader/src/alpha.ts",
+    "../fixtures/phase3-loader/src/beta.ts",
+    "../fixtures/phase3-loader/src/conflict.ts",
+    "../fixtures/phase3-loader/src/extension.ts"
+  ]
+}

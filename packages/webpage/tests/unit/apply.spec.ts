@@ -11,7 +11,7 @@ interface FakeEntry {
 }
 
 class FakeSlots extends Service {
-  private readonly declarations = new Set(['shell.overlay', 'sidebar.footer.action'])
+  private readonly declarations = new Set(['shell.overlay', 'sidebar.footer.action', 'tool.call.toolview'])
   private readonly registered = new Set<FakeEntry>()
   private readonly waiters = new Map<string, Set<() => void>>()
 
@@ -117,6 +117,9 @@ describe('client apply composition', () => {
     const pages = (ctx as Context & { pages: {
       list: { getSnapshot(): readonly RegisteredApp[] }
       get(id: string): RegisteredApp | undefined
+      open(id: string, path?: string): void
+      close(options?: { replace?: boolean }): void
+      current: { getSnapshot(): AppRoute | undefined }
     } }).pages
 
     expect(locale.registrations.has('webpage')).toBe(true)
@@ -125,12 +128,21 @@ describe('client apply composition', () => {
       'webpage.app': { kind: 'keyed', scope: 'root' },
     })
     expect(slots.entry('webpage.app').options.key).toBe('wha1echai.webpage')
+    expect(slots.entry('webpage.app').options.children).toEqual({
+      'webpage.inspector.pane': { kind: 'list', scope: 'root' },
+    })
     expect(slots.entry('sidebar.footer.action').options.id).toBe('webpage.apps')
+    expect(slots.entries('webpage.inspector.pane').map(entry => entry.options.id)).toEqual([
+      'webpage.inspector.catalog',
+      'webpage.inspector.topology',
+    ])
 
     const launcherFace = (slots.entry('sidebar.footer.action').options.inject as () => {
-      openApps(): void
+      hooks: { apps: { getSnapshot(): readonly RegisteredApp[] } }
+      openApp(id: string): void
     })()
-    launcherFace.openApps()
+    expect(launcherFace.hooks.apps.getSnapshot().map(app => app.id)).toEqual(['wha1echai.webpage'])
+    launcherFace.openApp('wha1echai.webpage')
     expect(window.location.pathname).toBe('/apps/wha1echai.webpage')
 
     const outletFace = (slots.entry('shell.overlay').options.inject as () => {
@@ -145,17 +157,45 @@ describe('client apply composition', () => {
     outletFace.close({ replace: true })
     expect(window.location.pathname).toBe('/')
 
-    const inspectorFace = (slots.entry('webpage.app').options.inject as () => {
+    const catalogFace = (slots.entries('webpage.inspector.pane')[0]!.options.inject as () => {
       openApp(id: string): void
     })()
-    inspectorFace.openApp('wha1echai.webpage')
+    catalogFace.openApp('wha1echai.webpage')
     expect(window.location.pathname).toBe('/apps/wha1echai.webpage')
+
+    const topologyFace = (slots.entries('webpage.inspector.pane')[1]!.options.inject as () => {
+      hooks: { topology: unknown }
+    })()
+    expect(topologyFace.hooks.topology).toBeDefined()
+
+    expect(slots.entry('tool.call.toolview').options.key).toBe('open_app')
+    const openAppFace = (slots.entry('tool.call.toolview').options.inject as (sessionId: string) => {
+      resolveApp(id: string): RegisteredApp | undefined
+      openApp(id: string, path?: string): void
+    })('session-1')
+    expect(openAppFace.resolveApp('wha1echai.webpage')?.label).toBe('Webpage')
+    expect(openAppFace.resolveApp('missing.app')).toBeUndefined()
+    openAppFace.openApp('wha1echai.webpage', '/inspect')
+    expect(window.location.pathname).toBe('/apps/wha1echai.webpage/inspect')
+
+    const other = ctx.plugin({
+      name: 'otherLauncher',
+      inject: ['pages'],
+      apply(pluginCtx) {
+        pluginCtx.pages.open('wha1echai.webpage', '/')
+      },
+    })
+    await other.await()
+    expect(window.location.pathname).toBe('/apps/wha1echai.webpage')
+    await other.dispose()
 
     await fiber.dispose()
     expect(pages.get('wha1echai.webpage')).toBeUndefined()
     expect(slots.entries('shell.overlay')).toEqual([])
     expect(slots.entries('webpage.app')).toEqual([])
+    expect(slots.entries('webpage.inspector.pane')).toEqual([])
     expect(slots.entries('sidebar.footer.action')).toEqual([])
+    expect(slots.entries('tool.call.toolview')).toEqual([])
     expect(locale.registrations.size).toBe(0)
   })
 })

@@ -43,6 +43,7 @@ describe('Phase 4 reference App and extension real Cordis Loader lane', () => {
     try {
       if (ctx !== undefined) await ctx.fiber.dispose()
     } finally {
+      window.history.replaceState(null, '', '/')
       delete windowState.__DSH_MODULES__
       delete windowState.__ModuleLoader__
       ctx = undefined
@@ -100,6 +101,19 @@ describe('Phase 4 reference App and extension real Cordis Loader lane', () => {
     expect(extensionEntries(ctx, CHILD_SLOT)[0]).toMatchObject({
       registrant: EXTENSION_PACKAGE_ID,
     })
+
+    window.history.replaceState(null, '', '/')
+    ctx.pages.open(APP_ID, '/details')
+    expect(ctx.pages.current.getSnapshot()).toEqual({
+      appId: APP_ID,
+      appPath: '/details',
+      search: '',
+      hash: '',
+    })
+    expect(window.location.pathname).toBe(`/apps/${APP_ID}/details`)
+    ctx.pages.close({ replace: true })
+    expect(ctx.pages.current.getSnapshot()).toBeUndefined()
+    expect(window.location.pathname).toBe('/')
 
     await ctx.loader.remove(APP_PACKAGE_ID)
     await ctx.loader.await()

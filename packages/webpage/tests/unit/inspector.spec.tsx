@@ -1,10 +1,12 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import type { HostObservable, LiveSlotNode, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
+import type { LiveSlotNode, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { RegisteredApp } from '../../src/client/contract.js'
+import { CatalogPane, type CatalogPaneProps } from '../../src/client/inspector/CatalogPane.js'
 import { Inspector, type InspectorProps } from '../../src/client/inspector/index.js'
+import { TopologyPane, type TopologyPaneProps } from '../../src/client/inspector/TopologyPane.js'
 
 const translations: Record<string, string> = {
   inspectorTitle: '应用检查器',
@@ -24,13 +26,6 @@ const translations: Record<string, string> = {
   openApp: '打开应用',
 }
 
-function observable<T>(snapshot: T): HostObservable<T> {
-  return {
-    getSnapshot: () => snapshot,
-    subscribe: () => () => {},
-  }
-}
-
 function selector<T>(snapshot: T): SnapshotSelectorHook<T> {
   function useSelector<S>(select: (value: T) => S): S {
     return select(snapshot)
@@ -38,30 +33,60 @@ function selector<T>(snapshot: T): SnapshotSelectorHook<T> {
   return useSelector
 }
 
-function props(
-  apps: readonly RegisteredApp[],
-  topology: readonly LiveSlotNode[] = [],
-  openApp = vi.fn(),
-): InspectorProps {
+function inspectorProps(renderSlot = vi.fn(() => <p>panes</p>)): InspectorProps {
   return {
-    appId: 'dsh.inspector',
+    appId: 'wha1echai.webpage',
     appPath: '/',
     search: '',
     hash: '',
     navigate: vi.fn(),
     close: vi.fn(),
+    renderSlot: renderSlot as unknown as InspectorProps['renderSlot'],
+    t: key => translations[key] ?? key,
+  }
+}
+
+function catalogProps(
+  apps: readonly RegisteredApp[],
+  topology: readonly LiveSlotNode[] = [],
+  openApp = vi.fn(),
+): CatalogPaneProps {
+  return {
+    appPath: '/',
     useApps: selector(apps),
     useTopology: selector(topology),
     openApp,
     t: key => translations[key] ?? key,
-  } as InspectorProps
+  } as CatalogPaneProps
 }
 
-describe('Inspector', () => {
+function topologyProps(topology: readonly LiveSlotNode[] = []): TopologyPaneProps {
+  return {
+    appPath: '/',
+    useTopology: selector(topology),
+    t: key => translations[key] ?? key,
+  } as TopologyPaneProps
+}
+
+describe('Inspector shell', () => {
+  afterEach(() => cleanup())
+
+  it('renders chrome and the Inspector pane slot with the App-local owner', () => {
+    const renderSlot = vi.fn(() => <p>panes</p>)
+    render(<Inspector {...inspectorProps(renderSlot)} />)
+
+    expect(screen.getByText('应用检查器')).toBeTruthy()
+    expect(screen.getByText('查看已注册应用及其扩展结构。')).toBeTruthy()
+    expect(screen.getByText('panes')).toBeTruthy()
+    expect(renderSlot).toHaveBeenCalledWith('webpage.inspector.pane', { appPath: '/' })
+  })
+})
+
+describe('CatalogPane', () => {
   afterEach(() => cleanup())
 
   it('renders the localized empty state without app cards', () => {
-    render(<Inspector {...props([])} />)
+    render(<CatalogPane {...catalogProps([])} />)
 
     expect(screen.getByText('没有已注册的应用。')).toBeTruthy()
     expect(screen.queryByRole('article')).toBeNull()
@@ -83,7 +108,7 @@ describe('Inspector', () => {
       children: [],
     }]
 
-    render(<Inspector {...props(apps, topology)} />)
+    render(<CatalogPane {...catalogProps(apps, topology)} />)
 
     expect(screen.getByText('catalogPlugin')).toBeTruthy()
     expect(screen.getByText('/apps/acme.ready')).toBeTruthy()
@@ -91,17 +116,27 @@ describe('Inspector', () => {
     expect(screen.getByText('7')).toBeTruthy()
     expect(screen.getByText('catalog')).toBeTruthy()
     expect(screen.getAllByText('未知').length).toBeGreaterThanOrEqual(2)
-    expect(screen.getAllByText('可用')).toHaveLength(2)
-    expect(screen.getAllByText('缺失')).toHaveLength(2)
+    expect(screen.getAllByText('可用')).toHaveLength(1)
+    expect(screen.getAllByText('缺失')).toHaveLength(1)
   })
 
   it('calls openApp with the selected App ID', () => {
     const openApp = vi.fn()
-    render(<Inspector {...props([{ id: 'acme.ready', label: 'Ready App' }], [], openApp)} />)
+    render(<CatalogPane {...catalogProps([{ id: 'acme.ready', label: 'Ready App', categories: [] }], [], openApp)} />)
 
     fireEvent.click(screen.getByRole('button', { name: '打开应用' }))
 
     expect(openApp).toHaveBeenCalledWith('acme.ready')
+  })
+})
+
+describe('TopologyPane', () => {
+  afterEach(() => cleanup())
+
+  it('renders the unknown empty topology copy', () => {
+    render(<TopologyPane {...topologyProps([])} />)
+    expect(screen.getByText('扩展结构')).toBeTruthy()
+    expect(screen.getByText('未知')).toBeTruthy()
   })
 
   it('renders declaredBy and occupant details through semantic nested lists', () => {
@@ -127,7 +162,7 @@ describe('Inspector', () => {
       }],
     }]
 
-    render(<Inspector {...props([], topology)} />)
+    render(<TopologyPane {...topologyProps(topology)} />)
 
     expect(screen.getAllByRole('list').length).toBeGreaterThanOrEqual(3)
     expect(screen.getByText('layoutPlugin')).toBeTruthy()
@@ -135,5 +170,20 @@ describe('Inspector', () => {
     expect(screen.getByText('acme.ready')).toBeTruthy()
     expect(screen.getByText('toolbar')).toBeTruthy()
     expect(screen.getByText('webpage.extension.action')).toBeTruthy()
+  })
+
+  it('omits optional occupant fields when the snapshot has no provenance', () => {
+    const topology: LiveSlotNode[] = [{
+      name: 'webpage.app',
+      kind: 'keyed',
+      scope: 'root',
+      occupants: [{ priority: 0, active: false }],
+      children: [],
+    }]
+
+    render(<TopologyPane {...topologyProps(topology)} />)
+
+    expect(screen.getByText('缺失')).toBeTruthy()
+    expect(screen.queryByText('layoutPlugin')).toBeNull()
   })
 })

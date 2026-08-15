@@ -11,7 +11,7 @@
     "build": "corepack pnpm@11.7.0 -r --if-present --sort run build",
     "typecheck": "tsc -b tsconfig.json && tsc --noEmit -p tests/integration/tsconfig.json && tsc --noEmit -p tests/public-contract/tsconfig.json",
     "lint": "node scripts/phase1-check.mjs --lint",
-    "test:unit": "node scripts/phase1-check.mjs --unit && vitest run --coverage && vitest run --config examples/reference-app/vitest.config.ts && vitest run --config examples/reference-extension/vitest.config.ts && node examples/reference-pack/scripts/validate-patch.mjs",
+    "test:unit": "node scripts/phase1-check.mjs --unit && vitest run --coverage && vitest run --config examples/reference-app/vitest.config.ts && vitest run --config examples/reference-extension/vitest.config.ts && vitest run --config examples/crash-app/vitest.config.ts && node examples/reference-pack/scripts/validate-patch.mjs",
     "test:integration": "corepack pnpm@11.7.0 run build && vitest run --config vitest.integration.config.ts",
     "test:browser": "node scripts/phase5-browser.mjs",
     "test:hmr": "node scripts/phase5-hmr.mjs",

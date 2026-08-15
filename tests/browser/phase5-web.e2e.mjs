@@ -122,6 +122,10 @@ async function inspectorSemanticSnapshot(page) {
     if (card === null) throw new Error('snapshot cannot find Reference App card')
     const field = name => card.querySelector(`[data-field="${name}"] dd`)?.textContent?.trim() ?? '<missing>'
     const topology = [...element.querySelectorAll('code')].map(node => node.textContent?.trim()).filter(Boolean)
+    const topologyRoot = topology.includes('webpage.app') ? 'webpage.app' : (topology[0] ?? '<missing>')
+    const topologyChild = topology.includes('wha1echai.reference.actions')
+      ? 'wha1echai.reference.actions'
+      : (topology[1] ?? '<missing>')
     const viewport = `${window.innerWidth}x${window.innerHeight}`
     return [
       'phase5-web semantic snapshot',
@@ -130,8 +134,8 @@ async function inspectorSemanticSnapshot(page) {
       `route: ${window.location.pathname}`,
       `dialog: ${element.querySelector('h1')?.textContent?.trim() ?? '<missing>'}`,
       `app: ${field('app-id')} | ${card.querySelector('h2')?.textContent?.trim() ?? '<missing>'} | status=${field('slot-status')} | source=${field('source-plugin')} | url=${field('url')} | categories=${field('categories')}`,
-      `topology: ${topology[0] ?? '<missing>'}`,
-      `topology-child: ${topology[1] ?? '<missing>'}`,
+      `topology: ${topologyRoot}`,
+      `topology-child: ${topologyChild}`,
       'keys: none',
       '',
     ].join('\n')
@@ -188,8 +192,11 @@ async function runScenarios() {
     await waitForShell(page)
     await rememberConversation(page)
 
-    // Launcher -> Inspector proves the real packed client composition is live.
+    // Launcher -> panel -> Inspector row proves the switcher and packed client.
     await page.getByRole('button', { name: 'Apps', exact: true }).click()
+    const palette = page.getByRole('dialog', { name: 'Apps', exact: true })
+    await waitForVisible(page, palette, 'Apps launch panel')
+    await palette.locator('[data-app-id="wha1echai.webpage"]').click()
     const inspector = await waitForInspector(page)
     await assertInspectorSemantics(page, inspector.dialog, inspector.card)
     const actualSnapshot = (await inspectorSemanticSnapshot(page)).trimEnd()
@@ -246,6 +253,25 @@ async function runScenarios() {
     await waitForVisible(page, unknownDialog.getByText('This App is not installed, or its UI plugin is currently unavailable.', { exact: true }), 'unknown App diagnostic copy')
     await assertConversationPreserved(page, 'unknown App transition')
 
+    // A crashing App degrades in place; chrome and conversation stay up.
+    const crashUrl = sameUrl(baseUrl, '/apps/wha1echai.crash')
+    await page.evaluate(url => {
+      history.pushState(null, '', url)
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    }, crashUrl)
+    await waitForUrl(page, crashUrl, 'Crash App route')
+    const crashDialog = page.getByRole('dialog', { name: 'Crash App', exact: true })
+    await waitForVisible(page, crashDialog, 'Crash App dialog')
+    await waitForVisible(page, crashDialog.getByRole('heading', { name: 'App crashed', exact: true }), 'Crash App crashed heading')
+    await waitForVisible(page, crashDialog.getByRole('button', { name: 'Retry', exact: true }), 'Crash App retry')
+    await waitForVisible(page, crashDialog.getByRole('button', { name: 'Close app', exact: true }), 'Crash App chrome close')
+    await assertConversationPreserved(page, 'Crash App transition')
+    await crashDialog.getByRole('button', { name: 'Close app', exact: true }).click()
+    await waitForUrl(page, '/', 'closing the Crash App')
+    await waitForShell(page)
+    await assertNoAppOutlet(page, 'close crash app')
+    await assertConversationPreserved(page, 'close crash app transition')
+
     // Root-path-only deployment is a negative case: the URL remains untouched
     // and dsh-webpage does not claim the upstream /dsh prefix.
     const unsupportedBasePath = sameUrl(baseUrl, '/dsh/apps/wha1echai.reference')
@@ -258,10 +284,11 @@ async function runScenarios() {
     await assertNoAppOutlet(page, 'unsupported /dsh/apps base path')
     await assertConversationPreserved(page, 'unsupported base-path transition')
 
-    assert(pageErrors.length === 0, `browser page errors observed:\n${pageErrors.join('\n')}`)
+    const unexpectedPageErrors = pageErrors.filter(text => !/intentional crash/i.test(text))
+    assert(unexpectedPageErrors.length === 0, `browser page errors observed:\n${unexpectedPageErrors.join('\n')}`)
     console.log(`Phase 5 real Web browser acceptance passed at ${baseUrl}`)
     console.log(`Packed profile: ${profile.profileDir}`)
-    console.log('Scenarios: startup/HTTP 200, launcher+Inspector, App/details, deep-link reload, back/forward, unknown App, conversation identity, negative base path, keyless snapshot')
+    console.log('Scenarios: startup/HTTP 200, launcher+Inspector, App/details, deep-link reload, back/forward, unknown App, crash isolation, conversation identity, negative base path, keyless snapshot')
   } catch (error) {
     const diagnostics = await pageDiagnostics(page)
     const runtime = await clientRuntimeDiagnostics(page).catch(runtimeError => ({ unavailable: String(runtimeError) }))

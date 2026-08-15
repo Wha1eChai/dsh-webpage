@@ -1,9 +1,15 @@
+import { lazy } from 'react'
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type { AppDescriptor } from '@wha1echai/dsh-webpage/client'
 
 import { en, zh } from './locales.js'
-import { ReferenceApp } from './ReferenceApp.js'
+
+/** App body is lazy so a throw or suspend stays inside Webpage's AppBoundary. */
+export const ReferenceAppBody = lazy(async () => {
+  const module = await import('./ReferenceApp.js')
+  return { default: module.ReferenceApp }
+})
 
 const descriptor = Object.freeze({
   id: 'wha1echai.reference',
@@ -33,7 +39,7 @@ export function apply(ctx: ClientContext): void {
       children: {
         'wha1echai.reference.actions': { kind: 'list', scope: 'root' },
       },
-    }, ReferenceApp))
+    }, ReferenceAppBody))
 
     return () => {
       unregisterSlot()

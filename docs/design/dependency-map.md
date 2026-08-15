@@ -44,6 +44,8 @@ Existing DSH plugin and Web runtime
       |   |
       |   +-- namespaced route ownership and nested pages
       |   +-- navigation and app switching
+      |   +-- declared App surfaces (overlay / panel / modal)
+      |   +-- optional /ui kit for App chrome
       |   +-- lifecycle-safe mount, dispose, and HMR
       |   +-- app inventory and read-only catalog
       |
@@ -78,6 +80,8 @@ The graph has two important separations:
 
 1. The entire App surface can work before a generic Resource model exists.
 2. Multi-user and remote features depend on enforceable identity and Grants, not merely on Web reachability.
+
+Phase 0.2 adds operate APIs (`ctx.pages.open` / `close` / `current`) and Inspector panes on existing DSH slots. Host Typert remotes and agent tools remain a later kernel slice. The first consumer is an independent Jobs App that reads `jobsBySession`; it does not replace official `dsh-client-ui-jobs` and does not live in this repository.
 
 ## What can be completed quickly as one slice
 

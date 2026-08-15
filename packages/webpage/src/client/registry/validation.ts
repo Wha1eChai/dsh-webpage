@@ -1,12 +1,7 @@
-import type { AppDescriptor } from '../contract.js'
+import { isAppId } from '../../app-id.js'
+import { APP_SURFACES, type AppDescriptor, type AppSurface } from '../contract.js'
 
-const segment = '[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
-const appIdPattern = new RegExp(`^(?:${segment}\\.)+${segment}$`)
-
-/** Return whether a value is a valid root-deployment App ID. */
-export function isAppId(value: unknown): value is string {
-  return typeof value === 'string' && appIdPattern.test(value)
-}
+export { isAppId }
 
 /** Assert the canonical App-ID grammar shared by the registry and router. */
 export function assertAppId(value: unknown): asserts value is string {
@@ -43,6 +38,17 @@ export function assertAppDescriptor(value: unknown): asserts value is AppDescrip
       assertNonEmptyString('category', category)
     }
   }
+
+  if ('surface' in descriptor && descriptor.surface !== undefined) {
+    if (!isAppSurface(descriptor.surface)) {
+      throw new TypeError('invalid App descriptor: surface must be overlay, panel, or modal')
+    }
+  }
+}
+
+/** Return whether a value is one of the three Outlet surfaces. */
+export function isAppSurface(value: unknown): value is AppSurface {
+  return typeof value === 'string' && (APP_SURFACES as readonly string[]).includes(value)
 }
 
 function assertNonEmptyString(field: string, value: unknown): asserts value is string {

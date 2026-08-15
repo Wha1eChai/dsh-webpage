@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { apply, inject, name } from '../src/client/index.js'
-import { ReferenceApp } from '../src/client/ReferenceApp.js'
+import { apply, inject, name, ReferenceAppBody } from '../src/client/index.js'
 
 describe('reference App composition', () => {
   afterEach(() => vi.restoreAllMocks())
@@ -43,7 +42,7 @@ describe('reference App composition', () => {
       children: {
         'wha1echai.reference.actions': { kind: 'list', scope: 'root' },
       },
-    }, ReferenceApp)
+    }, ReferenceAppBody)
 
     cleanups[0]()
     expect(unregisterApp).toHaveBeenCalledOnce()

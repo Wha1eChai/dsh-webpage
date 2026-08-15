@@ -1,0 +1,9 @@
+.card {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.missing {
+  color: var(--dsw-alias-state-error-primary);
+  font-weight: 600;
+}

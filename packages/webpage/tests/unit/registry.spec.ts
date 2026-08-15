@@ -1,7 +1,10 @@
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
+import type { LocationLike, RouteEnvironment } from '../../src/client/contract.js'
 import { PagesService } from '../../src/client/registry/service.js'
-import { assertAppDescriptor, assertAppId, isAppId } from '../../src/client/registry/validation.js'
+import { resolveAppSurface } from '../../src/client/contract.js'
+import { assertAppDescriptor, assertAppId, isAppId, isAppSurface } from '../../src/client/registry/validation.js'
+import { createRouteController } from '../../src/client/route/controller.js'
 
 function createContext(): Context {
   const ctx = new Context()
@@ -24,6 +27,7 @@ describe('PagesService registration', () => {
         description: 'Product catalog',
         order: 2,
         categories: ['commerce'],
+        surface: 'panel',
       })
     })
     await fiber
@@ -34,6 +38,7 @@ describe('PagesService registration', () => {
       description: 'Product catalog',
       order: 2,
       categories: ['commerce'],
+      surface: 'panel',
       sourcePlugin: 'catalogPlugin',
     })
     expect(ctx.pages.get('acme.catalog')).not.toHaveProperty('component')
@@ -273,6 +278,8 @@ describe('App metadata validation', () => {
       { id: 'acme.valid', label: 'Valid', categories: [42] },
       { id: 'acme.valid', label: 'Valid', categories: [''] },
       { id: 'acme.valid', label: 'Valid', categories: ['   '] },
+      { id: 'acme.valid', label: 'Valid', surface: 'window' },
+      { id: 'acme.valid', label: 'Valid', surface: 1 },
     ]
     for (const descriptor of invalidDescriptors) {
       expect(() => assertAppDescriptor(descriptor)).toThrow()
@@ -286,6 +293,11 @@ describe('App metadata validation', () => {
       categories: undefined,
     })
     assertAppDescriptor({ id: 'acme.valid', label: 'Valid', categories: [] })
+    assertAppDescriptor({ id: 'acme.valid', label: 'Valid', surface: 'panel' })
+    expect(isAppSurface('overlay')).toBe(true)
+    expect(isAppSurface('drawer')).toBe(false)
+    expect(resolveAppSurface(undefined)).toBe('overlay')
+    expect(resolveAppSurface('modal')).toBe('modal')
   })
 })
 
@@ -299,3 +311,78 @@ type AppDescriptorWithSource = {
 }
 
 type MutableRecord = { label: string }
+
+class FakeHistoryEnvironment implements RouteEnvironment {
+  readonly location: LocationLike
+  readonly listeners = new Set<() => void>()
+  href: string
+
+  readonly history = {
+    pushState: (_state: unknown, _title: string, url?: string | URL | null): void => {
+      this.href = String(url)
+      this.syncLocation()
+    },
+    replaceState: (_state: unknown, _title: string, url?: string | URL | null): void => {
+      this.href = String(url)
+      this.syncLocation()
+    },
+  }
+
+  constructor(initial: string) {
+    this.href = initial
+    this.location = { pathname: '/', search: '', hash: '' }
+    this.syncLocation()
+  }
+
+  addEventListener(type: 'popstate', listener: () => void): void {
+    expect(type).toBe('popstate')
+    this.listeners.add(listener)
+  }
+
+  removeEventListener(type: 'popstate', listener: () => void): void {
+    expect(type).toBe('popstate')
+    this.listeners.delete(listener)
+  }
+
+  private syncLocation(): void {
+    const url = new URL(this.href, 'http://127.0.0.1')
+    this.location.pathname = url.pathname
+    this.location.search = url.search
+    this.location.hash = url.hash
+  }
+}
+
+describe('PagesService navigation', () => {
+  it('fails loud when no RouteController is bound', async () => {
+    const ctx = createContext()
+    expect(ctx.pages.current.getSnapshot()).toBeUndefined()
+    expect(ctx.pages.current.subscribe(() => {})()).toBeUndefined()
+    expect(() => ctx.pages.open('acme.catalog')).toThrow('pages navigation is unavailable')
+    expect(() => ctx.pages.close()).toThrow('pages navigation is unavailable')
+    await ctx.fiber.dispose()
+  })
+
+  it('opens and closes Apps through a bound RouteController without exporting the controller', async () => {
+    const environment = new FakeHistoryEnvironment('/')
+    const route = createRouteController(environment)
+    const ctx = new Context()
+    new PagesService(ctx, route)
+
+    expect(ctx.pages.current.getSnapshot()).toBeUndefined()
+    ctx.pages.open('acme.catalog', '/details', { search: '?tab=all' })
+    expect(ctx.pages.current.getSnapshot()).toEqual({
+      appId: 'acme.catalog',
+      appPath: '/details',
+      search: '?tab=all',
+      hash: '',
+    })
+    expect(environment.location.pathname).toBe('/apps/acme.catalog/details')
+
+    ctx.pages.close({ replace: true })
+    expect(ctx.pages.current.getSnapshot()).toBeUndefined()
+    expect(environment.location.pathname).toBe('/')
+    route.dispose()
+    await ctx.fiber.dispose()
+  })
+})
+

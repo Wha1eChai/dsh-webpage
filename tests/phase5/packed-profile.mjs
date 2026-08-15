@@ -219,6 +219,36 @@ async function resolvedPackageRoot(profileDirectory, tempRoot, packageName) {
   return root
 }
 
+const crashPackageName = '@wha1echai/dsh-webpage-crash-app'
+const crashDirectory = join(workspaceRoot, 'examples', 'crash-app')
+
+async function installCrashFixture(tempRoot, pnpm, profileDirectory, runDsh, pnpmOptions) {
+  const destination = join(tempRoot, 'packs', 'crash')
+  await mkdir(destination, { recursive: true })
+  pnpmPackAt(pnpm, crashDirectory, destination)
+  const tarballs = (await readdir(destination, { withFileTypes: true }))
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.tgz'))
+  assert(tarballs.length === 1, `crash pack produced ${tarballs.length} tarballs`)
+  const archive = join(destination, tarballs[0].name)
+  assert(isWithin(tempRoot, archive), 'crash tarball escaped the temp root')
+
+  const fileSpec = `file:${archive.replaceAll('\\', '/')}`
+  const manifestPath = join(profileDirectory, 'package.json')
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
+  manifest.pnpm = { ...manifest.pnpm, overrides: { ...manifest.pnpm?.overrides, [crashPackageName]: fileSpec } }
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
+
+  const yamlPath = join(profileDirectory, 'pnpm-workspace.yaml')
+  const yaml = await readFile(yamlPath, 'utf8')
+  await writeFile(yamlPath, `${yaml.trimEnd()}\n  ${JSON.stringify(crashPackageName)}: ${JSON.stringify(fileSpec)}\n`, 'utf8')
+
+  runDsh(['plugin', '--profile', profileName, 'add', archive, ...pnpmOptions])
+}
+
+function pnpmPackAt(pnpm, directory, destination) {
+  runSync(process.execPath, [pnpm.cli, ...pnpm.prefix, 'pack', '--pack-destination', destination], { cwd: directory, env: process.env }, `pnpm pack ${directory}`)
+}
+
 function assertDumpConfig(dump) {
   const expectedRows = [
     "name: '@wha1echai/dsh-webpage'",
@@ -290,6 +320,7 @@ export async function createPackedWebProfile() {
     }
     const dumpConfig = runDsh(['--profile', profileName, '--dump-config'])
     assertDumpConfig(dumpConfig)
+    await installCrashFixture(tempRoot, pnpm, profileDirectory, runDsh, pnpmOptions)
 
     const dispose = async () => {
       if (disposed) return

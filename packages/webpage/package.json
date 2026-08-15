@@ -19,6 +19,11 @@
       "types": "./lib/types/client/index.d.ts",
       "default": "./lib/client.js"
     },
+    "./ui": {
+      "types": "./lib/types/ui/index.d.ts",
+      "import": "./lib/ui.js",
+      "default": "./lib/ui.js"
+    },
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
@@ -28,7 +33,8 @@
         "@deepseek-ai/dsh-client-runtime",
         "@deepseek-ai/dsh-client-ui-layout",
         "@deepseek-ai/dsh-client-ui-sidebar",
-        "@deepseek-ai/dsh-client-locale"
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-primitives"
       ],
       "platform": "web"
     },
@@ -41,6 +47,7 @@
     "lib/invariant.js",
     "lib/client.js",
     "lib/client.js.map",
+    "lib/ui.js",
     "lib/types/**/*.d.ts",
     "cordis.patch.yml",
     "README.md",
@@ -67,11 +74,13 @@
     "@deepseek-ai/dsh-client-web-react": "0.1.0-rc.6",
     "@deepseek-ai/dsh-client-schema-form": "0.1.0-rc.6",
     "@deepseek-ai/dsh-invariants": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-tools": "0.1.0-rc.6",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.1",
+    "@deepseek-ai/dsh-tools": "0.1.0-rc.6",
     "@deepseek-ai/dsh-client-runtime": "0.1.0-rc.6",
     "@deepseek-ai/dsh-client-locale": "0.1.0-rc.6",
     "@deepseek-ai/dsh-client-ui-layout": "0.1.0-rc.6",

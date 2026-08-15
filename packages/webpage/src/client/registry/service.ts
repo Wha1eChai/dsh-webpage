@@ -1,23 +1,52 @@
 import { Service, type Context } from '@deepseek-ai/cordis'
 import type { ObservableSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
-import type { AppDescriptor, PagesService as PagesServiceContract, RegisteredApp } from '../contract.js'
+import type {
+  AppDescriptor,
+  AppNavigateOptions,
+  AppRoute,
+  PagesService as PagesServiceContract,
+  RegisteredApp,
+  RouteControllerContract,
+} from '../contract.js'
 import { assertAppDescriptor } from './validation.js'
+
+const UNAVAILABLE_ROUTE: ObservableSnapshot<AppRoute | undefined> = Object.freeze({
+  getSnapshot: () => undefined,
+  subscribe: () => () => {},
+})
 
 /** Cordis-owned metadata registry exposed as `ctx.pages`. */
 export class PagesService extends Service<PagesServiceContract> implements PagesServiceContract {
   public readonly list: ObservableSnapshot<readonly RegisteredApp[]>
+  public readonly current: ObservableSnapshot<AppRoute | undefined>
 
   private readonly apps = new Map<string, RegisteredApp>()
   private readonly subscribers = new Set<() => void>()
+  private readonly route: RouteControllerContract | undefined
   private snapshot: readonly RegisteredApp[] = Object.freeze([])
   private notificationQueued = false
 
-  constructor(ctx: Context) {
+  constructor(ctx: Context, route?: RouteControllerContract) {
     super(ctx, 'pages')
+    this.route = route
+    this.current = route?.current ?? UNAVAILABLE_ROUTE
     this.list = Object.freeze({
       getSnapshot: () => this.snapshot,
       subscribe: (listener: () => void) => this.subscribe(listener),
     })
+  }
+
+  open(appId: string, appPath?: string, options?: AppNavigateOptions): void {
+    this.requireRoute().open(appId, appPath, options)
+  }
+
+  close(options?: { replace?: boolean }): void {
+    this.requireRoute().close(options)
+  }
+
+  private requireRoute(): RouteControllerContract {
+    if (this.route === undefined) throw new Error('pages navigation is unavailable')
+    return this.route
   }
 
   register(descriptor: AppDescriptor): () => void {
@@ -88,6 +117,7 @@ function freezeRecord(descriptor: AppDescriptor, sourcePlugin: string): Register
     ...(descriptor.description === undefined ? {} : { description: descriptor.description }),
     ...(descriptor.order === undefined ? {} : { order: descriptor.order }),
     ...(descriptor.categories === undefined ? {} : { categories: Object.freeze([...descriptor.categories]) }),
+    ...(descriptor.surface === undefined ? {} : { surface: descriptor.surface }),
     sourcePlugin,
   }
   return Object.freeze(record)

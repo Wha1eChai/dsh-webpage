@@ -1,12 +1,12 @@
-# dsh-webpage v0.1 architecture
+# dsh-webpage architecture
 
-Status: v0.1 accepted through the Phase 5 Web, client-HMR, App-crash, and real packed-profile lanes. This document describes an out-of-tree DSH Bundle. It does not require or imply any change to the DeepSeek Harness repository.
+Status: v0.1 accepted. Phase 0.2 accepted. Phase 0.3 accepted. Phase 0.4 accepted (failure domain). Phase 0.5 rebuilds the Usage App as a local ledger plus provider cards; standalone cron is not a Webpage product ([ADR 0007](../adr/0007-automations-are-trigger-to-agent-loop.md)). This document describes an out-of-tree DSH Bundle. It does not require or imply any change to the DeepSeek Harness repository. Gateway product work is paused.
 
 ## Scope and ownership
 
 The bundle gives ordinary DSH plugins a small, addressable App surface. DSH remains the installation, dependency, trust, and lifecycle system. An App is a contribution made by a plugin; it is not an installable plugin, package type, or second runtime.
 
-The approved workspace is a private root workspace with one future-publishable core at `packages/webpage` and private fixtures at `examples/reference-app`, `examples/reference-extension`, and `examples/reference-pack`. Only the core may become publishable. The compatibility target is exactly DSH `0.1.0-rc.6`; a target upgrade requires a separate compatibility pass.
+The approved workspace is a private root workspace with one future-publishable core at `packages/webpage` and private fixtures at `examples/reference-app`, `examples/reference-extension`, `examples/reference-pack`, and `examples/crash-app`. Only the core may become publishable. The compatibility target is exactly DSH `0.1.0-rc.6`; a target upgrade requires a separate compatibility pass.
 
 Phase 0 consumes no generic Resource, ACL, Space, Link, Supervisor, federation, marketplace, or second extension-registry abstraction. Those concerns are outside this architecture.
 
@@ -21,6 +21,7 @@ interface AppDescriptor {
   description?: string
   order?: number
   categories?: readonly string[]
+  surface?: 'overlay' | 'panel' | 'modal'
 }
 
 interface RegisteredApp extends AppDescriptor {
@@ -36,10 +37,15 @@ interface PagesService {
   register(descriptor: AppDescriptor): () => void
   get(id: string): RegisteredApp | undefined
   readonly list: ObservableSnapshot<readonly RegisteredApp[]>
+  readonly current: ObservableSnapshot<AppRoute | undefined>
+  open(appId: string, appPath?: string, options?: AppNavigateOptions): void
+  close(options?: { replace?: boolean }): void
 }
 ```
 
-`register()` accepts only an `AppDescriptor`. It never accepts a React component, `ReactNode`, UI factory, route handler, callback, slot definition, or caller-supplied `sourcePlugin`. The caller's active Cordis fiber supplies `sourcePlugin` for diagnostics when the service creates the `RegisteredApp` record. That value is provenance text, not a security identity, authorization principal, or trust decision.
+`register()` accepts only an `AppDescriptor`. It never accepts a React component, `ReactNode`, UI factory, route handler, callback, slot definition, or caller-supplied `sourcePlugin`. `surface` is an optional metadata enum (`overlay` | `panel` | `modal`); omitted values resolve to `overlay`, and any other value throws before publish. `open` / `close` / `current` wrap the single native-History `RouteController`; they are not a second router. The caller's active Cordis fiber supplies `sourcePlugin` for diagnostics when the service creates the `RegisteredApp` record. That value is provenance text, not a security identity, authorization principal, or trust decision.
+
+The optional `@wha1echai/dsh-webpage/ui` export is a source-level kit. Importing it does not register an App and is not part of `PagesService`.
 
 Every current browser client entry exports the standard DSH client plugin `name` for provenance and slot diagnostics: the core is `@wha1echai/dsh-webpage`, the reference App is `@wha1echai/dsh-webpage-reference-app`, and the reference extension is `@wha1echai/dsh-webpage-reference-extension`. These names do not grant authority or become an ACL identity. Aside from public type exports, the core `/client` runtime surface is `apply`, `inject`, and `name`; internal validators and route parsers remain absent. Each `dsh.client` package also exports `./package.json`, which external rc.6 `clientModules` uses to resolve the package manifest during client discovery. The packed verifier and real profile gate this compatibility requirement; it is not a new runtime abstraction or an ADR.
 
@@ -64,7 +70,9 @@ DSH root (single, shell-rendered)
 
 `AppOutlet` is one additive entry in the existing `shell.overlay` slot. It does not replace `root`, `ui-layout`, or the conversation surface. The outlet declares the keyed `webpage.app` child slot and renders the entry whose key equals the known App ID. A visible App plugin performs two separate contributions in one Cordis effect: it registers its descriptor with `ctx.pages`, and it registers its component in `webpage.app` with the same ID. If the declaration is not yet available, the plugin uses the DSH slot declaration-injection path; it does not bypass the slot ledger with a direct undeclared registration.
 
-The core contributes one Apps launcher action to the existing `sidebar.footer.action` list slot. Activating it navigates to the built-in Inspector at `/apps/wha1echai.webpage`; it does not replace the sidebar, expose plugin mutation, or maintain a second navigation registry.
+The core contributes one Apps launcher action to the existing `sidebar.footer.action` list slot. Activating it opens an anchored launch panel that lists every registered App and filters as the user types. A row click calls `ctx.pages.open(id)`. Inspector is one of those rows. The launcher does not replace the sidebar, expose plugin mutation, or maintain a second navigation registry. Scene-local controls (header actions, future slot contributions) are equally valid entries and must call the same `pages.open()`.
+
+The Inspector App declares the list child slot `webpage.inspector.pane`. Default catalog and topology panes are in-tree contributions. Other plugins may add read-only panes through `ctx.slots.inject`; they cannot mutate the plugin tree.
 
 The keyed slot receives immutable `AppOwnerProps` from the outlet:
 
@@ -95,13 +103,15 @@ The supported route grammar is root-scoped `/apps/<app-id>/*`. The App ID is the
 
 ```text
 location / native history
-  → RouteController snapshot
+  → RouteController snapshot (also ctx.pages.current)
   → AppOutlet parses the root App route
   → ctx.pages.get(appId)
   → webpage.app keyed render with AppOwnerProps
 ```
 
-For a syntactically valid App route, the outlet covers the AppFrame through `shell.overlay` while the conversation remains mounted underneath. A known App renders its keyed entry. An unknown or withdrawn App ID keeps the URL unchanged and renders the Webpage unavailable view; it is never redirected to another App. A non-App URL renders no outlet. Leaving the App removes only the overlay contribution; it does not unmount or reset the conversation.
+Third-party plugins call `ctx.pages.open(appId, appPath)` instead of importing the controller.
+
+For a syntactically valid App route, the outlet contributes through `shell.overlay` while the conversation remains mounted. The shell shape follows the App's `surface`: `overlay` covers the frame, `panel` slides from the side, and `modal` centers a dialog. All three use `role="dialog"`, Escape, and History `close()`. A known App renders its keyed entry. An unknown or withdrawn App ID keeps the URL unchanged and renders the Webpage unavailable view in the default overlay; it is never redirected to another App. A non-App URL renders no outlet. Leaving the App removes only the outlet contribution; it does not unmount or reset the conversation.
 
 This release supports deployment at the origin root only. It does not infer or consume a reverse-proxy prefix such as `/dsh`; `/apps/<id>/*` is the complete supported public route namespace. Consequently `/dsh/apps/<id>` is deterministically classified as a non-App URL: dsh-webpage does not mount its outlet, rewrite the URL, or emit a runtime error. The upstream SPA fallback may still serve the DSH shell at that path, but that behavior is not subpath support.
 
@@ -119,13 +129,13 @@ Client HMR follows the rc.6 `@deepseek-ai/dsh-client-hmr` replacement lifecycle:
 - Registry and route observable notifications isolate subscriber failures: one faulty listener is diagnosed through `console.error` and cannot suppress later listeners or make a committed History write appear to fail.
 - The registry never uses `sourcePlugin` as authorization, identity, or trust. Installation and access policy remain DSH concerns and are not inferred from a fiber name.
 - A direct registration into an undeclared slot, a duplicate child declaration, or another DSH slot contract violation fails through the official slot machinery. Declaration injection is the supported late-binding path.
-- A component render failure remains a DSH slot-entry failure and is reported through the slot renderer's per-entry diagnostics. dsh-webpage does not silently replace a crashed App with another contributor.
+- A component render failure is isolated by `AppBoundary` around the App body. Chrome, conversation, and other Apps stay mounted. The body degrades to a crashed state with Retry; `componentDidCatch` logs the App ID and `sourcePlugin` (or `unknown`). DSH's slot renderer has a closer error boundary and leaves `data-slot-error` after it abdicates a keyed entry; `AppBoundary` treats that marker as the Outlet-owned crash face. dsh-webpage does not silently replace a crashed App with another contributor. A lazy App body may suspend; the same boundary shows a loading state until it resolves.
 - A known metadata record without a live keyed UI entry renders the unavailable state rather than inventing a fallback App body. The Inspector still reports the metadata and slot mismatch.
 - The Inspector at `wha1echai.webpage` is read-only. It consumes `ctx.pages.list` and `ctx.slots.snapshot('webpage.app')`, and cannot register, dispose, enable, disable, or mutate contributions. It displays `sourcePlugin` when present and the literal diagnostic value `unknown` when absent. Multiple Apps contributed by one fiber show the same provenance; no uniqueness or authorization meaning is inferred. The slot snapshot supplies declaration state, occupant state, registrant diagnostics, and the recursively declared extension topology.
 
 ## Boundaries
 
-DSH owns Cordis fibers and effects, client module loading, HMR, the root slot, the shell layout, `shell.overlay`, and the slot registry. dsh-webpage owns the metadata registry, App ID validation and ordering, `RouteController`, `AppOutlet`, the `webpage.app` declaration, and the read-only Inspector. Each App owns its route subtree and explicitly declared child slots.
+DSH owns Cordis fibers and effects, client module loading, HMR, the root slot, the shell layout, `shell.overlay`, and the slot registry. dsh-webpage owns the metadata registry, App ID validation and ordering, `RouteController` exposed through `ctx.pages`, `AppOutlet`, the `webpage.app` declaration, the Inspector shell, and default Inspector panes. Each App owns its route subtree and explicitly declared child slots. Ecosystem Apps such as Usage live in their own plugins and peer on this package. Jobs and Automations sibling repos are history and are not in the web profile. The crash-app fixture is a private demo only; it is not a product App and is not installed in the web profile.
 
 No App route can take over the shell root, replace the conversation, intercept arbitrary URLs, or create a new extension authority. The package remains a normal external DSH Bundle and does not patch upstream source.
 

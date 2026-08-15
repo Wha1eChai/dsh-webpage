@@ -39,12 +39,19 @@ An App-owned, named location or capability at which authorized App Extensions ma
 _Avoid_: Global hook, implicit child route
 
 **App Outlet**:
-The host-owned surface that selects and displays the App addressed by the current browser URL while leaving the DSH conversation surface mounted.
+The host-owned surface that selects and displays the App addressed by the current browser URL while leaving the DSH conversation surface mounted. Chrome follows the App's declared surface (overlay, panel, or modal).
 _Avoid_: Router, replacement shell, plugin host
 
+**App Surface**:
+A metadata enum on the App descriptor that selects Outlet chrome. It is not a second router and not a React component.
+_Avoid_: Layout slot, theme, window type
+
+**App Launcher**:
+The global discovery panel opened from the sidebar Apps control. It lists registered Apps, filters them, and calls `pages.open()`. It is not the Inspector.
+_Avoid_: Command-only empty palette, plugin manager
+
 **App Inspector**:
-A read-only App that reports installed App contributions and their declared composition topology.
-_Avoid_: Plugin manager, marketplace, control plane
+A read-only App that reports installed App contributions and their declared composition topology. Its panes are list-slot contributions; it is not a plugin manager, marketplace, or control plane.
 
 ## Resources and authority
 

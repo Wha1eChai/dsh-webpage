@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process'
 import { access, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises'
 import { constants, existsSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -33,15 +33,23 @@ const payloadAllowlist = Object.freeze({
     'package/lib/invariant.js',
     'package/lib/client.js',
     'package/lib/client.js.map',
+    'package/lib/ui.js',
     'package/lib/types/index.d.ts',
     'package/lib/types/invariant.d.ts',
+    'package/lib/types/app-id.d.ts',
+    'package/lib/types/tools.d.ts',
     'package/lib/types/client/contract.d.ts',
     'package/lib/types/client/index.d.ts',
     'package/lib/types/client/slots.d.ts',
     'package/lib/types/client/locales.d.ts',
+    'package/lib/types/client/open-app/OpenAppCard.d.ts',
     'package/lib/types/client/outlet/AppOutlet.d.ts',
+    'package/lib/types/client/outlet/AppBoundary.d.ts',
     'package/lib/types/client/launcher/AppsLauncher.d.ts',
     'package/lib/types/client/inspector/index.d.ts',
+    'package/lib/types/client/inspector/CatalogPane.d.ts',
+    'package/lib/types/client/inspector/TopologyPane.d.ts',
+    'package/lib/types/client/inspector/fields.d.ts',
     'package/lib/types/client/inspector/topology.d.ts',
     'package/lib/types/client/registry/index.d.ts',
     'package/lib/types/client/registry/service.d.ts',
@@ -49,6 +57,12 @@ const payloadAllowlist = Object.freeze({
     'package/lib/types/client/route/controller.d.ts',
     'package/lib/types/client/route/index.d.ts',
     'package/lib/types/client/route/parser.d.ts',
+    'package/lib/types/ui/index.d.ts',
+    'package/lib/types/ui/AppActions.d.ts',
+    'package/lib/types/ui/AppEmpty.d.ts',
+    'package/lib/types/ui/AppFields.d.ts',
+    'package/lib/types/ui/AppList.d.ts',
+    'package/lib/types/ui/AppPage.d.ts',
   ].sort()),
   app: Object.freeze([
     'package/package.json',
@@ -87,6 +101,7 @@ const expectedClientInject = Object.freeze({
     '@deepseek-ai/dsh-client-ui-layout',
     '@deepseek-ai/dsh-client-ui-sidebar',
     '@deepseek-ai/dsh-client-locale',
+    '@deepseek-ai/dsh-client-ui-primitives',
   ]),
   app: Object.freeze([packageNames.webpage]),
   extension: Object.freeze([packageNames.app]),
@@ -203,8 +218,11 @@ function tarExecutable() {
 }
 
 function tarRead(archive, member) {
-  const result = spawnSync(tarExecutable(), ['-xOf', archive, member], {
+  // List/read from the archive's directory: GNU tar treats `C:` in an absolute
+  // Windows path as a remote host ("Cannot connect to C:").
+  const result = spawnSync(tarExecutable(), ['-xOf', basename(archive), member], {
     encoding: 'utf8',
+    cwd: dirname(archive),
     stdio: ['ignore', 'pipe', 'pipe'],
   })
   if (result.error) fail(`tar could not read ${member} from ${archive}: ${result.error.message}`)
@@ -215,8 +233,9 @@ function tarRead(archive, member) {
 }
 
 function tarMembers(archive) {
-  const result = spawnSync(tarExecutable(), ['-tzf', archive], {
+  const result = spawnSync(tarExecutable(), ['-tzf', basename(archive)], {
     encoding: 'utf8',
+    cwd: dirname(archive),
     stdio: ['ignore', 'pipe', 'pipe'],
   })
   if (result.error) fail(`tar could not list ${archive}: ${result.error.message}`)
@@ -248,7 +267,13 @@ function assertNoWorkspaceRanges(manifest, key) {
 }
 
 function assertExactDependencies(manifest, expected, key) {
-  assert(JSON.stringify(manifest.dependencies ?? {}) === JSON.stringify(expected), `${key} dependencies changed: expected ${JSON.stringify(expected)}, got ${JSON.stringify(manifest.dependencies ?? {})}`)
+  const actual = manifest.dependencies ?? {}
+  const actualKeys = Object.keys(actual).sort()
+  const expectedKeys = Object.keys(expected).sort()
+  assert(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), `${key} dependency names changed: expected ${JSON.stringify(expectedKeys)}, got ${JSON.stringify(actualKeys)}`)
+  for (const name of expectedKeys) {
+    assert(actual[name] === expected[name], `${key} dependency ${name} changed: expected ${expected[name]}, got ${actual[name]}`)
+  }
 }
 
 function assertPackedManifest(manifest, key) {

@@ -1,0 +1,3 @@
+- insert:
+    - id: crash-app
+      name: '@wha1echai/dsh-webpage-crash-app'

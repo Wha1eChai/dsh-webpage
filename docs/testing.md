@@ -1,8 +1,8 @@
-# dsh-webpage v0.1 testing
+# dsh-webpage testing
 
 ## Purpose and evidence status
 
-This document defines the evidence required for the 0.1 Addressable Apps release and links completed phase records. A command's presence does not imply a pass; only a matching evidence section may change a row from `PLANNED / UNVERIFIED`.
+This document defines the evidence required for Addressable Apps (v0.1) and the App kernel slice (v0.2). A command's presence does not imply a pass; only a matching evidence section may change a row from `PLANNED / UNVERIFIED`.
 
 The release environment is DSH `0.1.0-rc.6`, pnpm `11.7.0`, and Node `^22.19.0 || >=24.0.0`. The supported deployment is the root path (`/`). A non-root base path is a required negative case and is not a release target.
 
@@ -176,3 +176,32 @@ The v0.1 verification gate is green only when:
 - `pnpm verify` passes with no skipped required lane.
 
 Those implementation, aggregate, and independent-review conditions are evidenced. The public v0.1 source-release decision is `GO`; npm publication remains out of scope.
+
+## Phase 0.2 kernel lanes
+
+| Lane | Command(s) | Required evidence | Status |
+| --- | --- | --- | --- |
+| Pages navigation | `pnpm test:unit` | A non-core caller can `ctx.pages.open` / `close` without importing `createRouteController` | COMPLETED — 49 unit tests, 100% coverage; see [phase-0.2-verification.md](evidence/phase-0.2-verification.md) |
+| Inspector panes | `pnpm test:unit` | Inspector shell `renderSlot`s `webpage.inspector.pane`; catalog and topology are separate contributions | COMPLETED in 0.2 — catalog and topology are in-tree pane contributions |
+| Launch panel and surfaces | `pnpm test:unit`; `pnpm test:browser` | Apps opens a list+filter panel; Inspector is a row; Outlet honors overlay/panel/modal | COMPLETED — Phase 0.3 unit + browser evidence |
+| Kernel regression | `pnpm typecheck`; `pnpm lint`; `pnpm test:unit`; `pnpm test:integration` | v0.1 Loader/reference composition still passes | COMPLETED — typecheck, lint, 49 unit tests, 2 Loader integration tests on 2026-08-15 |
+
+Jobs App packed-install and browser evidence live in the independent `dsh-jobs-app` repository and are recorded in [phase-0.2-verification.md](evidence/phase-0.2-verification.md).
+
+## Phase 0.4 failure-domain and flagship lanes
+
+| Lane | Command(s) | Required evidence | Status |
+| --- | --- | --- | --- |
+| Kernel crash face | `pnpm test:unit`; `pnpm test:browser` | Throwing body and `data-slot-error` both become "App crashed"; chrome stays | COMPLETED — see [phase-0.4-verification.md](evidence/phase-0.4-verification.md) |
+| Authoring | docs + reference-app tests | Lazy body template; INSERT-only pack | COMPLETED |
+| Usage App | sibling `dsh-usage-app` vitest + pack | panel, 100% unit, tarball in web profile | COMPLETED for the Phase 0.4 session/job-count panel; superseded by Phase 0.5 |
+| Automations App | sibling `dsh-automations-app` vitest + pack | panel, Host-missing empty, 100% unit, tarball in web profile | COMPLETED for Phase 0.4; unplugged from the web profile in Phase 0.5 ([ADR 0007](adr/0007-automations-are-trigger-to-agent-loop.md)) |
+
+## Phase 0.5 Usage rebuild and automations ADR
+
+| Lane | Command(s) | Required evidence | Status |
+| --- | --- | --- | --- |
+| Peer automations research | docs | Codex / Claude / Cursor / DSH conclusions with official URLs | COMPLETED — [agent-loop-and-peer-automations.md](research/agent-loop-and-peer-automations.md); [ADR 0007](adr/0007-automations-are-trigger-to-agent-loop.md) |
+| rc.6 Host API spike | read-only harness types | `sessionPersistence` / `credentials.resolve` / `webServer.register` exist | COMPLETED — [phase-0.5-usage-api-spike.md](evidence/phase-0.5-usage-api-spike.md) |
+| Usage Host + UI | sibling `dsh-usage-app` vitest + pack | heatmap + balances; fold isolation; 20-file tarball | COMPLETED — see [phase-0.5-verification.md](evidence/phase-0.5-verification.md) |
+| Standing web profile | `dsh web --dump-config`; browser | webpage + usage only; no jobs-app / automations-app / crash-app / titanwings | COMPLETED — see [phase-0.5-verification.md](evidence/phase-0.5-verification.md) |

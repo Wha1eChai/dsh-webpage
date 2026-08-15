@@ -4,6 +4,7 @@
     { "path": "./packages/webpage" },
     { "path": "./examples/reference-app" },
     { "path": "./examples/reference-extension" },
-    { "path": "./examples/reference-pack" }
+    { "path": "./examples/reference-pack" },
+    { "path": "./examples/crash-app" }
   ]
 }

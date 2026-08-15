@@ -10,6 +10,7 @@
     "baseUrl": "../..",
     "paths": {
       "@wha1echai/dsh-webpage/client": ["packages/webpage/lib/types/client/index.d.ts"],
+      "@wha1echai/dsh-webpage/ui": ["packages/webpage/lib/types/ui/index.d.ts"],
       "@deepseek-ai/dsh-client-runtime/client": ["packages/webpage/node_modules/@deepseek-ai/dsh-client-runtime/lib/types/client/index.d.ts"]
     }
   },

@@ -1,6 +1,6 @@
 # Package topology
 
-This document freezes the v0.1 workspace and publish boundary. Phase 5 verifies the reference package artifacts through a real external rc.6 profile without changing the publish boundary.
+This document freezes the Webpage kernel workspace and publish boundary. Phase 5 verified the v0.1 reference package artifacts through a real external rc.6 profile. Phase 0.2 does not add first-party Apps to this repository: the Jobs App is an independent public plugin that peers on `@wha1echai/dsh-webpage`.
 
 ## Workspace
 
@@ -14,7 +14,8 @@ dsh-webpage/
 ├── examples/
 │   ├── reference-app/           # private fixture plugin
 │   ├── reference-extension/     # private fixture plugin
-│   └── reference-pack/          # private dsh.bundle fixture
+│   ├── reference-pack/          # private dsh.bundle fixture
+│   └── crash-app/               # private failure-domain demo; not a product App
 ├── tests/                       # cross-package Loader and packed-artifact harnesses
 ├── docs/
 ├── package.json                 # private workspace and verification scripts
@@ -22,20 +23,21 @@ dsh-webpage/
 └── pnpm-lock.yaml
 ```
 
-Only `packages/webpage` is eligible for a future public release. The root and every package under `examples/` remain `private: true`; examples are executable acceptance fixtures, not independent product packages.
+Only `packages/webpage` is eligible for a future public release. The root and every package under `examples/` remain `private: true`; examples are executable acceptance fixtures, not independent product packages. Ecosystem Apps are not added under `packages/` or `examples/`; they are separate repositories that depend on the published kernel contract. The Phase 0.5 flagship is the sibling checkout `dsh-usage-app`. `dsh-jobs-app` and `dsh-automations-app` remain sibling history and are not in the web profile. `examples/crash-app` is a private failure-domain fixture and must not enter the web profile.
 
 ## Runtime entries
 
-`@wha1echai/dsh-webpage` has two runtime halves and one declarative bundle layer:
+`@wha1echai/dsh-webpage` has two runtime halves, one optional UI library, and one declarative bundle layer:
 
 | Surface | Source | Published artifact | Module shape |
 | --- | --- | --- | --- |
 | Node loader | `src/index.ts` | `lib/index.js` and declarations | ESM, named `apply` only |
 | Invariant companion | `src/invariant.ts` | `lib/invariant.js` and declarations | ESM, named Cordis companion exports |
 | Browser client | `src/client/index.tsx` | `lib/client.js` and source map | Loader-compatible CJS factory exporting standard `apply`, `inject`, and `name` runtime values |
+| Optional UI kit | `src/ui/index.ts` | `lib/ui.js` and declarations | Browser ESM wrapping DSH primitives; not a Loader factory and not part of `register()` |
 | Bundle patch | `cordis.patch.yml` | unchanged package file | `dsh.bundle.patch` manifest target |
 
-The package root exports the Node half. `exports["./client"]` resolves the built browser entry consumed by the DSH client module graph. An accidental default export is a package-gate failure because Loader unwrapping would change the plugin surface. Every `dsh.client` package in the accepted reference composition also exports `./package.json`; rc.6 `clientModules` resolves that manifest path while discovering the client entry.
+The package root exports the Node half. `exports["./client"]` resolves the built browser entry consumed by the DSH client module graph. `exports["./ui"]` is an optional kit for App authors; a consumer that imports it must keep `@deepseek-ai/dsh-client-ui-primitives` as a Loader external. An accidental default export is a package-gate failure because Loader unwrapping would change the plugin surface. Every `dsh.client` package in the accepted reference composition also exports `./package.json`; rc.6 `clientModules` resolves that manifest path while discovering the client entry.
 
 The manifest must declare:
 

@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { Suspense } from 'react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { ReferenceAppBody } from '../src/client/index.js'
 import { ReferenceApp, type ReferenceAppProps } from '../src/client/ReferenceApp.js'
 
 const translations: Record<string, string> = {
@@ -85,5 +87,14 @@ describe('ReferenceApp', () => {
     expect(screen.getByRole('button', { name: 'Extension action' })).toBeTruthy()
     expect(renderSlot).toHaveBeenCalledOnce()
     expect(renderSlot).toHaveBeenCalledWith('wha1echai.reference.actions', { appPath: '/details' })
+  })
+
+  it('lazy-loads the reference body through the client entry', async () => {
+    render(
+      <Suspense fallback={<div>loading</div>}>
+        <ReferenceAppBody {...props('/')} />
+      </Suspense>,
+    )
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'App home' })).toBeTruthy())
   })
 })

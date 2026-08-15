@@ -4,6 +4,10 @@ export const zh = Object.freeze({
   close: '关闭应用',
   unavailableTitle: '应用不可用',
   unavailableDescription: '该应用未安装，或其界面插件当前不可用。',
+  crashedTitle: '应用已崩溃',
+  crashedDescription: '这个应用出了问题，但桌面和其他应用仍可使用。',
+  retry: '重试',
+  loading: '正在加载应用…',
   inspectorTitle: '应用检查器',
   inspectorDescription: '查看已注册应用及其扩展结构。',
   appId: '应用 ID',
@@ -17,8 +21,13 @@ export const zh = Object.freeze({
   unknown: '未知',
   categories: '分类',
   noApps: '没有已注册的应用。',
+  noMatchingApps: '没有匹配的应用。',
+  filterApps: '筛选应用',
   extensionTree: '扩展结构',
   openApp: '打开应用',
+  openAppSuggestion: '建议打开应用',
+  openAppPath: '路径',
+  appNotInstalled: '未安装',
 })
 
 export const en = Object.freeze({
@@ -26,6 +35,10 @@ export const en = Object.freeze({
   close: 'Close app',
   unavailableTitle: 'App unavailable',
   unavailableDescription: 'This App is not installed, or its UI plugin is currently unavailable.',
+  crashedTitle: 'App crashed',
+  crashedDescription: 'This App failed, but the desktop and other Apps are still running.',
+  retry: 'Retry',
+  loading: 'Loading app…',
   inspectorTitle: 'App Inspector',
   inspectorDescription: 'Inspect registered Apps and their extension topology.',
   appId: 'App ID',
@@ -39,8 +52,13 @@ export const en = Object.freeze({
   unknown: 'Unknown',
   categories: 'Categories',
   noApps: 'No Apps are registered.',
+  noMatchingApps: 'No matching Apps.',
+  filterApps: 'Filter apps',
   extensionTree: 'Extension topology',
   openApp: 'Open App',
+  openAppSuggestion: 'Suggested App',
+  openAppPath: 'Path',
+  appNotInstalled: 'Not installed',
 })
 
 export type WebpageLocaleKey = keyof typeof zh

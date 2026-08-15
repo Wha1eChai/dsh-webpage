@@ -47,6 +47,9 @@ export type TestContext = Context & {
   pages: {
     get(id: string): { id: string; sourcePlugin?: string; label: string } | undefined
     list: { getSnapshot(): readonly { id: string; sourcePlugin?: string }[] }
+    current: { getSnapshot(): { appId: string; appPath: string; search: string; hash: string } | undefined }
+    open(appId: string, appPath?: string, options?: { replace?: boolean; search?: string; hash?: string }): void
+    close(options?: { replace?: boolean }): void
   }
   locale: LocaleRuntime
 }

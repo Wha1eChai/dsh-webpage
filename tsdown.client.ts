@@ -119,6 +119,32 @@ function purityPlugin(): NonNullable<UserConfig['plugins']>[number] {
   }
 }
 
+function uiLibraryConfig(id: string): UserConfig {
+  return {
+    name: `${id}/ui`,
+    entry: { ui: 'src/ui/index.ts' },
+    outDir: 'lib',
+    format: 'esm',
+    platform: 'browser',
+    target: 'es2022',
+    dts: false,
+    clean: false,
+    deps: {
+      neverBundle: [...CLIENT_EXTERNALS],
+      alwaysBundle: (source: string) => !CLIENT_EXTERNALS.includes(source),
+    },
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV ?? 'production'),
+      'import.meta.env.MODE': JSON.stringify(process.env.NODE_ENV ?? 'production'),
+      'import.meta.env': JSON.stringify({ MODE: process.env.NODE_ENV ?? 'production' }),
+    },
+    plugins: [purityPlugin(), cssPlugin(`${id}/ui`)],
+    outputOptions: {
+      entryFileNames: 'ui.js',
+    },
+  }
+}
+
 function clientConfig(id: string, entry: string): UserConfig {
   return {
     name: `${id}/client`,
@@ -141,6 +167,7 @@ function clientConfig(id: string, entry: string): UserConfig {
     },
     plugins: [purityPlugin(), cssPlugin(id)],
     outputOptions: {
+      codeSplitting: false,
       entryFileNames: 'client.js',
       banner: `window.__ModuleLoader__.load({ id: ${JSON.stringify(id)}, factory: (require) => {`,
       footer: 'return module.exports; } });',
@@ -156,14 +183,14 @@ function clientConfig(id: string, entry: string): UserConfig {
 }
 
 /** Build the ESM Node half and the Loader-compatible CJS client half. */
-export function clientBundle(id: string, nodeEntries: readonly string[], options: { readonly client?: boolean } = {}): BuildFaceConfig {
+export function clientBundle(id: string, nodeEntries: readonly string[], options: { readonly client?: boolean; readonly ui?: boolean } = {}): BuildFaceConfig {
   return ({ env }) => {
     const face = buildFace(env?.DSH_BUILD_FACE)
     const node = nodeConfig(id, nodeEntries)
     if (options.client === false) return face === 'host' ? [skipWorkspaceBuild] : [node]
     const client = clientConfig(id, face === undefined ? 'src/client/index.tsx' : 'lib/types/client/index.js')
+    const configs = options.ui === true ? [node, client, uiLibraryConfig(id)] : [node, client]
     if (face === 'host') return [skipWorkspaceBuild]
-    if (face === 'client') return [node, client]
-    return [node, client]
+    return configs
   }
 }

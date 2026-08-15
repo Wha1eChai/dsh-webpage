@@ -8,15 +8,17 @@ The project is implemented entirely as an out-of-tree DSH plugin/bundle. It does
 
 ## Current focus
 
-The first milestone is deliberately limited to the shared Web application substrate:
+The platform is deliberately limited to the shared Web application substrate:
 
 - app registration and discovery;
 - stable, namespaced routes with nested pages;
 - navigation and application switching;
 - lifecycle-safe mount, dispose, and HMR behavior;
+- a failure domain in which a crashed App is a closed window, not a broken shell;
 - declared extension slots;
 - app metadata for classification and read-only catalog views;
-- one reference app proving the complete path.
+- one address space shared by humans and session agents (`open_app` plus an inert suggestion card);
+- an executable authoring contract, proven by out-of-tree Apps rather than by in-tree features.
 
 The stock Web shell remains mounted. A single Webpage outlet contributes to the existing `shell.overlay` slot and renders the active `/apps/<app-id>/*` route above the conversation surface; leaving an App reveals the still-mounted conversation with its local state intact.
 

@@ -36,6 +36,20 @@ dsh-webpage is a windowing system for the DeepSeek Harness, not a store and not 
 
 The platform deliberately owns **no** store, scheduler, resource model, or runtime HTTP helpers (ADR [0006](../../../docs/adr/0006-webpage-is-a-windowing-system-not-a-store.md), [0007](../../../docs/adr/0007-automations-are-trigger-to-agent-loop.md), [0008](../../../docs/adr/0008-contract-over-wrapper.md)). App Host halves talk to DSH host services directly.
 
+## Do not reinvent wheels
+
+An App's own job is **design tokens and layout**. Widget internals are someone else's job. Agents default to hand-rolling; resist it in this order.
+
+**1. Platform primitives — always, for anything they cover.** `@deepseek-ai/dsh-client-ui-primitives` exports `Button` (`ButtonVariant`), `Pill`, `Input`, `StateDot` (`StateDotState`), `Tooltip`, `HoverCard`, `Modal`, `Menu`, `DisclosureRow`, `JsonTree`, `CodeBlock`, `MarkdownText`, and an icon set. Structure comes from `@wha1echai/dsh-webpage/ui` (`AppPage`, `AppList`/`AppRow`, `AppEmpty`, `AppFields`/`AppField`). Both are Loader externals: zero bundle cost and automatic theme fidelity. Verify prop shapes in `deepseek-harness/packages/client/ui-primitives/src/*.tsx`. A hand-rolled button, dot, pill, or tooltip is a defect, not a style choice.
+
+**2. Theme tokens, never literal colors.** Only `--dsw-alias-*` names defined in `deepseek-harness/packages/client/ui-theme/src/styles/design-platform.css`. Read the dark-theme block too — every choice must hold in both. Semantic families: `state-business-primary` / `-tertiary` (accent), `state-success-primary`, `state-error-primary` / `-secondary`, `label-primary` / `-secondary` / `-tertiary` / `-caption` / `-dimmed`, `border-l1`..`l4`, `interactive-bg-hover` / `-active` / `-hover-danger`. Trap: in the light theme `bg-layer-1`, `-layer-2`, and `-layer-3` all resolve to the same white — depth must come from borders and spacing, never from swapping layer tokens.
+
+**3. A mature third-party component only for a non-trivial widget the platform lacks** (charts, heatmaps, virtualized lists). It must pass every criterion: MIT/BSD/Apache-2.0 with attribution in `NOTICE` (add it to `files` and to `packedAllowlist`); React 18.3.1 with no peers beyond react/react-dom; small and dependency-light; themeable through our tokens with no CSS-in-JS runtime; able to carry the App's `data-*` test hooks; and **not** `@mui/*`, `tailwindcss`, or `react-router` — the checker's `noForbiddenUi` flag hard-fails those.
+
+Mechanics: add it as a **devDependency**. The tsdown preset inlines anything outside `CLIENT_EXTERNALS` into the single `lib/client.js`, so consumers never install it, `dsh.client.inject` / `expectedClientInject` stay untouched (those are for DSH client-plugin graph modules only), and `--pack` still passes because a correctly inlined library emits no `require()`.
+
+**4. If nothing passes the gate, keep plain markup.** Tokens plus layout on plain elements beat a bespoke mini-framework.
+
 ## App workflow
 
 ```

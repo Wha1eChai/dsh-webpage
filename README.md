@@ -44,7 +44,8 @@ A Pack is a curated composition of existing plugins and configuration, analogous
 - [v0.2 App kernel plan](./docs/plan/phase-0.2-app-kernel.md)
 - [v0.3 surfaces and UI kit plan](./docs/plan/phase-0.3-app-surfaces-and-ui-kit.md)
 - [v0.4 failure domain and flagship Apps](./docs/plan/phase-0.4-failure-domain-and-flagship-apps.md)
-- [Authoring guide](./docs/guides/app-authoring.md)
+- [Authoring guide](./docs/guides/app-authoring.md) — the versioned authoring contract (contract version 1)
+- [App authoring skill](./.cursor/skills/dsh-app-authoring/SKILL.md) — agent-facing entry point to the same contract
 - [Phase 0.4 demo script](./docs/demo/phase-0.4-demo.md)
 - [Phase 0.5 demo script](./docs/demo/phase-0.5-demo.md)
 - [Agent loop and peer automations](./docs/research/agent-loop-and-peer-automations.md)
@@ -65,17 +66,34 @@ A Pack is a curated composition of existing plugins and configuration, analogous
 - [Roadmap (2026-08, 0.6 and beyond)](./docs/plan/roadmap-2026-08.md)
 - [Current handoff](./HANDOFF.md)
 
+## The repository family
+
+This repository is the **platform**: the kernel, its documentation, the authoring contract, and the acceptance fixtures. Ecosystem Apps live in their own repositories on purpose — an App is an out-of-tree contribution that consumes the published contract, and that property is the product claim ([ADR 0001](./docs/adr/0001-apps-are-plugin-contributions.md), [ADR 0006](./docs/adr/0006-webpage-is-a-windowing-system-not-a-store.md)).
+
+| Repository | Package | Role |
+| --- | --- | --- |
+| `dsh-webpage` (here) | `@wha1echai/dsh-webpage` | App kernel: registry, routes, outlet, launcher, Inspector, failure domain, `open_app` tool, optional `/ui` kit |
+| `dsh-app-check` | `@wha1echai/dsh-app-check` | Executable authoring-contract checks. Major version tracks the contract version |
+| `dsh-usage-app` | `@wha1echai/dsh-usage-app` | Flagship App: local token heatmap plus Host-proxied provider balances |
+| `dsh-notes-app` | `@wha1echai/dsh-notes-app` | Small addressable notes App; built as a cold-start test of this contract |
+| `dsh-jobs-app` | `@wha1echai/dsh-jobs-app` | Historical example: current-session jobs as a panel. Not in the standing profile |
+| `dsh-automations-app` | `@wha1echai/dsh-automations-app` | Historical example only; superseded by [ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md). Not in the standing profile |
+
 ## Current status
 
-v0.1 is accepted. Phase 0.2 is accepted. Phase 0.3 is accepted. Phase 0.4 is accepted (failure domain). Phase 0.5 rebuilds Usage as a local token heatmap plus Host-proxied provider cards, and records that standalone cron is not an Automations App ([ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md)). Jobs App and the titanwings Automations remote are out of the web profile. Gateway wrapping of CLIProxyAPI is paused. The supported deployment remains root-path-only and shared Cordis HMR remains intentionally disabled. Implementation and evidence status are tracked in the [v0.1 plan](./docs/plan/phase-0.1-addressable-apps.md), [v0.2 plan](./docs/plan/phase-0.2-app-kernel.md), [v0.3 plan](./docs/plan/phase-0.3-app-surfaces-and-ui-kit.md), [v0.4 plan](./docs/plan/phase-0.4-failure-domain-and-flagship-apps.md), [Phase 0.4 evidence](./docs/evidence/phase-0.4-verification.md), [Phase 0.5 evidence](./docs/evidence/phase-0.5-verification.md), [Phase 5 evidence](./docs/evidence/phase5-verification.md), and `HANDOFF.md`.
+v0.1 through Phase 0.5 are accepted. Phase 0.6 stamps authoring contract version 1 and makes agents first-class users of the address space: the kernel Host half registers an `open_app` tool, and the client renders it as an inert suggestion card that navigates only when a human clicks it ([evidence](./docs/evidence/phase-0.6-verification.md)). The conformance checks are extracted into `@wha1echai/dsh-app-check`. Standalone cron is explicitly not an Automations App ([ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md)); the platform ships contract carriers rather than a runtime wrapper ([ADR 0008](./docs/adr/0008-contract-over-wrapper.md)).
 
-## Install the v0.1 preview
+Gateway wrapping of CLIProxyAPI is paused. The supported deployment remains root-path-only and shared Cordis HMR remains intentionally disabled. Implementation and evidence status are tracked in the phase plans under [docs/plan](./docs/plan/), the records under [docs/evidence](./docs/evidence/), the [roadmap](./docs/plan/roadmap-2026-08.md), and `HANDOFF.md`.
 
-The project is distributed as a GitHub Release tarball for now; it is not published to npm. DSH `0.1.0-rc.6`, Node `^22.19.0 || >=24.0.0`, and a root-mounted Web deployment are required.
+Known gaps are recorded rather than implied: the contract has never survived an upstream DSH bump, nothing is published to npm, and every verification so far has run on a single machine without CI.
+
+## Install the preview
+
+Not published to npm yet, so the kernel is distributed as a GitHub Release tarball. DSH `0.1.0-rc.6`, Node `^22.19.0 || >=24.0.0`, and a root-mounted Web deployment are required.
 
 ```powershell
 gh release download v0.1.0 --repo Wha1eChai/dsh-webpage --pattern 'wha1echai-dsh-webpage-0.1.0.tgz'
 dsh plugin --profile web add .\wha1echai-dsh-webpage-0.1.0.tgz
 ```
 
-The core package contributes the Webpage substrate and Inspector. The private reference fixtures in this repository are test packages, not part of the public installation contract.
+The release lags the branch while Phase 0.6 settles; build from source for the current kernel. The core package contributes the Webpage substrate and Inspector. The reference fixtures in this repository are `private: true` test packages, not part of the public installation contract.

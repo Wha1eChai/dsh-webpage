@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react'
 import { Button } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { InjectFace, PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 
-import { isAppId } from '../../app-id.js'
+import { isAppId, isValidAppPath } from '../../app-id.js'
 import { AppField, AppFields, AppList, AppRow } from '../../ui/index.js'
 import type { RegisteredApp } from '../contract.js'
-import type { OpenAppCallBlock } from '../slots.js'
 import styles from './OpenAppCard.module.css'
 
 export interface OpenAppCardInject {
@@ -13,8 +12,27 @@ export interface OpenAppCardInject {
   openApp(id: string, path?: string): void
 }
 
+/**
+ * Structural owner + locale + inject face. Do not augment SlotMap with
+ * `tool.call.toolview`: ui-tool already owns that key (`ToolCallOwnerProps` /
+ * `ToolCallViewProps` on `@deepseek-ai/dsh-client-ui-tool/client`), and a
+ * second narrower owner conflicts. Those published types also pull
+ * `@deepseek-ai/dsh-client-ui-conversation`, which is not a webpage peer.
+ */
+export interface OpenAppCallBlock {
+  readonly argsRaw?: string
+  readonly kind?: string
+  readonly call?: { readonly argsRaw: string } | null
+}
+
+export interface OpenAppCardOwner {
+  callId: string
+  toolName: string
+  block: OpenAppCallBlock
+}
+
 export type OpenAppCardProps =
-  PropsRuntime<'tool.call.toolview'>
+  OpenAppCardOwner
   & PropsLocale<'webpage'>
   & InjectFace<OpenAppCardInject>
 
@@ -25,7 +43,7 @@ export interface OpenAppSuggestion {
 
 /** Read `app_id` / `path` from a frozen tool call or result block. Pure. */
 export function readOpenAppSuggestion(block: OpenAppCallBlock): OpenAppSuggestion | undefined {
-  const raw = 'kind' in block ? block.call?.argsRaw : block.argsRaw
+  const raw = block.kind === 'tool-result' ? block.call?.argsRaw : block.argsRaw
   if (typeof raw !== 'string') return undefined
   let parsed: unknown
   try {
@@ -39,6 +57,11 @@ export function readOpenAppSuggestion(block: OpenAppCallBlock): OpenAppSuggestio
   const path = (parsed as { path?: unknown }).path
   if (typeof path === 'string') return { appId, path }
   return { appId }
+}
+
+function canOpenSuggestion(suggestion: OpenAppSuggestion): boolean {
+  return isAppId(suggestion.appId)
+    && (suggestion.path === undefined || isValidAppPath(suggestion.path))
 }
 
 /** Inert suggestion card for an `open_app` tool call. Clicking opens; render does not. */
@@ -77,7 +100,7 @@ export function OpenAppCard(props: OpenAppCardProps): ReactNode {
   }
 
   let trailing: ReactNode
-  if (suggestion !== undefined && isAppId(suggestion.appId)) {
+  if (suggestion !== undefined && canOpenSuggestion(suggestion)) {
     const target = suggestion
     trailing = (
       <Button

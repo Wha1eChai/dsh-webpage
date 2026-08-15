@@ -8,7 +8,7 @@ import { TopologyPane } from './inspector/TopologyPane.js'
 import { createSlotTopologySource } from './inspector/topology.js'
 import { AppsLauncher } from './launcher/AppsLauncher.js'
 import { en, zh } from './locales.js'
-import { OpenAppCard } from './open-app/OpenAppCard.js'
+import { OpenAppCard, type OpenAppCardInject } from './open-app/OpenAppCard.js'
 import { AppOutlet } from './outlet/AppOutlet.js'
 import { PagesService as PagesRegistryService } from './registry/index.js'
 import { createRouteController } from './route/index.js'
@@ -114,14 +114,23 @@ export function apply(ctx: ClientContext): void {
     }),
   }, AppsLauncher))
 
-  // ui-tool dispatches each atomic call through keyed `tool.call.toolview`
-  // (`@deepseek-ai/dsh-client-ui-tool` slot map + README). A keyed occupant
-  // replaces the generic row, so out-of-tree plugins can own `open_app`
-  // without a conversationEvents node. ui-conversation already folds
-  // tool/call + tool/result into that generic row; a second node would
-  // double-render. Evidence: ui-tool contract/slots.ts (open key domain),
-  // ui-tool README "Atomic Tool views", ui-skill `key: 'skill'` registrant.
-  ctx.slots.inject('tool.call.toolview', () => ctx.slots.register({
+  // ui-tool dispatches each atomic call through keyed `tool.call.toolview`.
+  // Webpage does not redeclare that SlotMap key (owner-shape conflict); the
+  // card is a structural subset of ToolCallViewProps. A keyed occupant
+  // replaces the generic row; do not add a conversationEvents node.
+  const toolViewSlots = ctx.slots as unknown as {
+    inject(name: 'tool.call.toolview', factory: () => () => void): () => void
+    register(
+      options: {
+        name: 'tool.call.toolview'
+        key: 'open_app'
+        locale: string
+        inject: (sessionId: string) => OpenAppCardInject
+      },
+      component: typeof OpenAppCard,
+    ): () => void
+  }
+  toolViewSlots.inject('tool.call.toolview', () => toolViewSlots.register({
     name: 'tool.call.toolview',
     key: 'open_app',
     locale: LOCALE_NAMESPACE,

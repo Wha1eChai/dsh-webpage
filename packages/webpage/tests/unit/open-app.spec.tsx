@@ -110,6 +110,29 @@ describe('OpenAppCard', () => {
     expect(openApp).toHaveBeenCalledWith('wha1echai.usage', '/today')
   })
 
+  it('hides the open button when the path fails the shared grammar', () => {
+    const openApp = vi.fn()
+    render(<OpenAppCard {...cardProps({
+      openApp,
+      block: { argsRaw: JSON.stringify({ app_id: 'wha1echai.usage', path: '//odd' }) },
+    })} />)
+    expect(screen.getByText('Usage')).toBeTruthy()
+    expect(screen.getByText('//odd')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: '打开应用' })).toBeNull()
+    expect(openApp).not.toHaveBeenCalled()
+  })
+
+  it('opens an uninstalled grammar-valid app on click', () => {
+    const openApp = vi.fn()
+    render(<OpenAppCard {...cardProps({
+      openApp,
+      block: { argsRaw: JSON.stringify({ app_id: 'acme.missing', path: '/inbox' }) },
+    })} />)
+    expect(screen.getByText('未安装')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: '打开应用' }))
+    expect(openApp).toHaveBeenCalledWith('acme.missing', '/inbox')
+  })
+
   it('stays inert for unreadable or invalid ids', () => {
     const openApp = vi.fn()
     const { rerender } = render(<OpenAppCard {...cardProps({

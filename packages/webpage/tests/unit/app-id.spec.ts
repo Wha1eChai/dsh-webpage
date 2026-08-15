@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isAppId, isOpenAppPath } from '../../src/app-id.js'
+import { isAppId, isValidAppPath } from '../../src/app-id.js'
 
 describe('App ID grammar', () => {
   it('accepts two-or-more lower-case dotted segments with interior hyphens', () => {
@@ -30,18 +30,17 @@ describe('App ID grammar', () => {
   })
 })
 
-describe('open_app path grammar', () => {
-  it('accepts strings that start with /', () => {
-    expect(isOpenAppPath('/')).toBe(true)
-    expect(isOpenAppPath('/today')).toBe(true)
-    expect(isOpenAppPath('//odd')).toBe(true)
+describe('App path grammar', () => {
+  it('accepts the same absolute in-app routes as the client router', () => {
+    expect(isValidAppPath('/')).toBe(true)
+    expect(isValidAppPath('/today')).toBe(true)
+    expect(isValidAppPath('/settings/')).toBe(true)
   })
 
-  it('rejects missing, empty, or relative paths', () => {
-    expect(isOpenAppPath('')).toBe(false)
-    expect(isOpenAppPath('today')).toBe(false)
-    expect(isOpenAppPath(' /today')).toBe(false)
-    expect(isOpenAppPath(1)).toBe(false)
-    expect(isOpenAppPath(undefined)).toBe(false)
+  it('rejects Host-loose strings that the client router would throw on', () => {
+    const invalid = ['//odd', '/a/../b', '/x?tab=1', '', 'today', ' /today', 1, undefined]
+    for (const value of invalid) {
+      expect(isValidAppPath(value), String(value)).toBe(false)
+    }
   })
 })

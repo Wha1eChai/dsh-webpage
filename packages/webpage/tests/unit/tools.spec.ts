@@ -68,7 +68,19 @@ describe('open_app tool definition', () => {
     })
     await expect(tool.execute({ app_id: 'wha1echai.usage', path: 'today' }, fakeExec())).rejects.toMatchObject({
       name: 'ToolArgsError',
-      violations: ['path must start with "/"'],
+      violations: ['invalid App path'],
+    })
+    await expect(tool.execute({ app_id: 'wha1echai.usage', path: '//odd' }, fakeExec())).rejects.toMatchObject({
+      name: 'ToolArgsError',
+      violations: ['invalid App path'],
+    })
+    await expect(tool.execute({ app_id: 'wha1echai.usage', path: '/a/../b' }, fakeExec())).rejects.toMatchObject({
+      name: 'ToolArgsError',
+      violations: ['invalid App path'],
+    })
+    await expect(tool.execute({ app_id: 'wha1echai.usage', path: '/x?tab=1' }, fakeExec())).rejects.toMatchObject({
+      name: 'ToolArgsError',
+      violations: ['invalid App path'],
     })
     await expect(tool.execute({}, fakeExec())).rejects.toMatchObject({
       name: 'ToolArgsError',

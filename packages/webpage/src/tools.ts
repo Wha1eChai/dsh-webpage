@@ -1,4 +1,4 @@
-import { isAppId, isOpenAppPath } from './app-id.js'
+import { isAppId, isValidAppPath } from './app-id.js'
 
 /** Wire name of the Webpage `open_app` tool. */
 export const OPEN_APP_TOOL_NAME = 'open_app'
@@ -7,7 +7,7 @@ const OPEN_APP_DESCRIPTION = [
   'Open an installed Webpage App for the user as a suggestion card.',
   'The user clicks the card to open it; this tool does not navigate by itself.',
   'Use App IDs from context (for example `wha1echai.usage`).',
-  'Optional `path` is an in-app route and must start with `/`.',
+  'Optional `path` is an in-app route and must be a valid App path.',
 ].join(' ')
 
 /** Minimal Host context used to register tools without a hard `inject` export. */
@@ -40,7 +40,7 @@ export function createOpenAppTool({ defineTool, ToolArgsError }: DshToolsModule)
       },
       path: {
         type: 'string',
-        description: 'Optional in-app route. Must start with `/` when present.',
+        description: 'Optional in-app route. Must be a valid App path when present.',
       },
     },
     output: {
@@ -60,8 +60,8 @@ export function createOpenAppTool({ defineTool, ToolArgsError }: DshToolsModule)
       if (!isAppId(args.app_id)) {
         throw new ToolArgsError([`invalid App ID ${String(args.app_id)}`])
       }
-      if (args.path !== undefined && !isOpenAppPath(args.path)) {
-        throw new ToolArgsError(['path must start with "/"'])
+      if (args.path !== undefined && !isValidAppPath(args.path)) {
+        throw new ToolArgsError(['invalid App path'])
       }
       if (args.path === undefined) {
         return Promise.resolve({ appId: args.app_id })

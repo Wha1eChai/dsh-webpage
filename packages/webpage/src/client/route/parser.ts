@@ -1,26 +1,10 @@
+import { isValidAppPath } from '../../app-id.js'
 import { isAppId } from '../registry/validation.js'
 import type { AppRoute, LocationLike } from '../contract.js'
 
+export { isValidAppPath }
+
 const APP_ROUTE_PREFIX = '/apps/'
-const ENCODED_SEPARATOR = /%(?:2f|5c)/i
-
-/** Validate one absolute path within an App's own route subtree. */
-export function isValidAppPath(value: unknown): value is string {
-  if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return false
-  if (/[\\?#]/.test(value) || ENCODED_SEPARATOR.test(value)) return false
-
-  for (const segment of value.split('/')) {
-    if (segment === '.' || segment === '..') return false
-    let decoded: string
-    try {
-      decoded = decodeURIComponent(segment)
-    } catch {
-      return false
-    }
-    if (decoded === '.' || decoded === '..') return false
-  }
-  return true
-}
 
 /** Validate the browser query component without normalizing it. */
 export function isValidSearch(value: unknown): value is string {

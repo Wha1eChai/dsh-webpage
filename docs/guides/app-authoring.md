@@ -5,7 +5,13 @@ An App is an addressable contribution made by an ordinary DSH plugin. Installati
 Target: DSH `0.1.0-rc.6`. Peer `@dshapps/webpage` at `0.2.0`.
 Contract version: 1. A DSH target bump raises this number; re-run the conformance checks instead of re-reading kernel source ([ADR 0008](../adr/0008-contract-over-wrapper.md)).
 
+Start from the public template repository [`dsh-app-template`](https://github.com/Wha1eChai/dsh-app-template) when scaffolding a new App.
+
 ## 1. Register metadata only
+
+The descriptor is only the metadata half. It lives inside a Cordis client `apply()` that also registers locale dictionaries, the keyed `webpage.app` body (see [§3](#3-lazy-body)), optional child slots, and **reverse-order** cleanup inside one `ctx.effect`. Copy the full client entry from [`dsh-app-template/src/client/index.tsx`](https://github.com/Wha1eChai/dsh-app-template/blob/main/src/client/index.tsx); the fragment below is the descriptor slice only.
+
+`label` is the raw launcher string (Inspector and the Apps list show it as-is). It is **not** a locale key; put translatable copy in `ctx.locale` and use that inside the body.
 
 ```ts
 ctx.pages.register({
@@ -53,13 +59,19 @@ ctx.slots.inject('webpage.app', () => ctx.slots.register({
 
 The DSH client bundle is a single Loader factory (`lib/client.js`). tsdown must set `codeSplitting: false` so the dynamic import stays inside that file. Async chunks are not Loader-compatible. `React.lazy` is still the source contract: Webpage wraps the body in `Suspense` and an error boundary.
 
-## 4. Failure domain
+## 4. App addressing
+
+Browser URLs under `/apps/<app-id>/<rest>` parse to `{ appId, appPath }` (`packages/webpage/src/client/route/parser.ts`). The root desktop is `/` — no App id in the path. Opening an unknown id keeps the URL and shows the kernel unavailable state; do not redirect to `/`.
+
+Inside the body, `appPath` is the suffix after the id (`/` when the URL ends at `/apps/<id>`). Use `pages.navigate(appPath)` for in-App routing; unknown local paths should render your own unavailable view without changing the browser URL.
+
+## 5. Failure domain
 
 A throwing App body degrades to "App crashed" with Retry. Chrome, the conversation, and other Apps stay up. `componentDidCatch` logs the App ID and `sourcePlugin`. DSH's slot renderer may catch first and leave `data-slot-error`; Webpage still shows the same crash face.
 
 This is the promise: a crashed App is a closed window, not a bricked desktop. Do not throw from `apply()` or from a boot-path plugin. Throw only from the lazy body, after `register()` has succeeded.
 
-## 5. Pack hygiene
+## 6. Pack hygiene
 
 The App's `cordis.patch.yml` inserts **only its own row**:
 
@@ -71,13 +83,13 @@ The App's `cordis.patch.yml` inserts **only its own row**:
 
 Do not override `webpage`, `ui-layout`, or any official core loader id. Do not insert `@dshapps/webpage` from an App pack (that duplicates `id: webpage`). Webpage is a file dependency plus override, not a second bundle row from the App.
 
-## 6. Locale and kit
+## 7. Locale and kit
 
 Register Chinese and English dictionaries through `ctx.locale`. Chinese is the default.
 
 `@dshapps/webpage/ui` is optional (`AppPage`, `AppList` / `AppRow`, `AppEmpty`, `AppFields`, `AppActions`). Import it as a value; every other `@dshapps/webpage` specifier stays type-only. The kit is not an argument to `register()`.
 
-## 7. Host half
+## 8. Host half
 
 An App may ship a Host half (loopback HTTP routes, ledgers, keys). Keys and durable state never go to the browser.
 
@@ -115,11 +127,11 @@ export function apply(ctx?: UsageHostContext): void {
 }
 ```
 
-No-op without `ctx`. Try `inject`, then fall back to direct registration. Never throw. `apply()` never throws; see [§4](#4-failure-domain).
+No-op without `ctx`. Try `inject`, then fall back to direct registration. Never throw. `apply()` never throws; see [§5](#5-failure-domain).
 
 The loopback fence and JSON helpers in `dsh-usage-app/src/http.ts` are a reference implementation, not part of the contract. One consumer; rule of three per [ADR 0008](../adr/0008-contract-over-wrapper.md).
 
-## 8. Heavy service Apps
+## 9. Heavy service Apps
 
 An App that manages a local binary or daemon splits into two halves that never merge:
 
@@ -149,13 +161,45 @@ The kernel ships one platform tool: `open_app` in `packages/webpage/src/tools.ts
 
 An App must not proxy or mount a foreign HTTP server into the DSH origin — not a managed subprocess console, not a remote service. Host-owned routes only. See [ADR 0009](../adr/0009-apps-do-not-proxy-foreign-origins.md).
 
-Cordis traps for the Host half stay in [§7](#7-host-half).
+Cordis traps for the Host half stay in [§8](#8-host-half).
 
-## 9. Run the conformance checks
+## 10. Run the conformance checks
 
-Every App repo carries `--lint` / `--pack` checks. They live in `@dshapps/app-check`, whose major version tracks this contract version; the repo keeps a thin `scripts/check.mjs` wrapper plus a `dsh-app-check.config.mjs`. `--pack` asserts the packed tarball equals an exact allowlist. The allowlist is per-repo config, not doctrine.
+Every App repo carries `--lint` / `--pack` checks. They live in `@dshapps/app-check`, whose major version tracks this contract version; the repo keeps a thin `scripts/check.mjs` wrapper plus a `dsh-app-check.config.mjs`. `--pack` asserts the packed tarball equals an exact allowlist. These rules were always enforced; this section documents them.
 
 `packageManager` is pinned `pnpm@11.7.0`. Nested `pnpm run` on some machines resolves pnpm `11.0.9`; the check scripts fall back through Corepack. Do not produce release tarballs with a mismatched pnpm.
+
+### Checker-enforced shape (always on by default)
+
+| Flag | What it enforces |
+| --- | --- |
+| `invariantExport` | Ship `src/invariant.ts` → `lib/invariant.js` and export it at `./invariant` (Cordis companion that registers package ownership) |
+| `noNodeDefaultExport` / built Node entry | Root export resolves to `lib/index.js` and exposes **only** `apply` |
+| `clientCssInjection` | Built `lib/client.js` contains the `data-plugin-css` marker (CSS Modules injection); without a `.module.css` import the pack step fails |
+| `noAdjacentCheckout` | No source file (including README) may reference an adjacent DeepSeek Harness checkout path |
+| `noForbiddenUi` | No `react-router`, `tailwindcss`, or `@mui/*` imports |
+| `noPrepare` | No `prepare` / install build scripts on the published package (`allowBuilds` friction) |
+
+See [`dsh-app-check/README.md`](https://github.com/Wha1eChai/dsh-app-check) for the full `require` list.
+
+### Unpublished `@dshapps/webpage`
+
+Nothing in this family is on npm yet. Pin `"@dshapps/webpage": "0.2.0"` in `peerDependencies` and add a sibling override in `pnpm-workspace.yaml`:
+
+```yaml
+overrides:
+  "@dshapps/webpage": "file:../dsh-webpage/packages/webpage"
+minimumReleaseAgeExclude:
+  - '@deepseek-ai/cordis@4.0.1'
+  - '@deepseek-ai/dsh-client-locale@0.1.0-rc.6'
+  # …every @deepseek-ai/dsh* pin the App declares
+```
+
+Copy the exclude list from [`dsh-app-template/pnpm-workspace.yaml`](https://github.com/Wha1eChai/dsh-app-template/blob/main/pnpm-workspace.yaml). `allowFileDshPins` in config stays `false` for publishable Apps.
+
+### `packedAllowlist`
+
+The allowlist is per-repo config, not doctrine — but its paths must match **exactly** what `pnpm pack` emits after `pnpm build`. Typical entries mirror tsdown/tsc output: `lib/index.js`, `lib/invariant.js`, `lib/client.js`, `lib/client.js.map`, `lib/types/**`, plus root `package.json`, `README.md`, `LICENSE`, `cordis.patch.yml`. Dev-only files such as `src/css-modules.d.ts` are not emitted and must not appear. Diff with `node scripts/check.mjs --pack`.
 
 Testing:
 
@@ -183,7 +227,7 @@ test: {
 },
 ```
 
-## 10. Publish checklist
+## 11. Publish checklist
 
 - No `prepare` / install build script on the published package if you can avoid it (`allowBuilds` friction).
 - Manifest declares `dsh.client.platform: web`, `dsh.bundle.patch`, and `exports["./package.json"]`.

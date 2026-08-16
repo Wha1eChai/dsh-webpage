@@ -2,8 +2,9 @@ import { spawnSync } from 'node:child_process'
 import { access, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises'
 import { constants, existsSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { runPnpm } from './locate-pnpm.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const expectedVersion = '0.2.0'
@@ -176,28 +177,7 @@ async function createTempRoot() {
 }
 
 function pnpmCommand(args, cwd) {
-  const pnpmCli = process.env.npm_execpath
-  assert(typeof pnpmCli === 'string' && pnpmCli.length > 0, 'pnpm did not expose npm_execpath; invoke this script with npm_execpath set')
-  assert(existsSync(pnpmCli), `npm_execpath does not exist: ${pnpmCli}`)
-
-  const extension = extname(pnpmCli).toLowerCase()
-  const windowsShim = process.platform === 'win32' && (extension === '.cmd' || extension === '.bat')
-  const command = windowsShim ? (process.env.ComSpec ?? 'cmd.exe') : process.execPath
-  const commandArgs = windowsShim ? ['/d', '/s', '/c', pnpmCli, ...args] : [pnpmCli, ...args]
-  const result = spawnSync(command, commandArgs, {
-    cwd,
-    encoding: 'utf8',
-    env: process.env,
-    shell: false,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
-
-  if (result.error) fail(`pnpm command failed to start: ${result.error.message}`)
-  if (result.status !== 0) {
-    const output = [result.stdout, result.stderr].filter(Boolean).join('\n').trim()
-    fail(`pnpm ${args.join(' ')} failed with exit code ${result.status}${output ? `:\n${output}` : ''}`)
-  }
-  return result.stdout
+  return runPnpm(args, cwd, fail)
 }
 
 async function packPackage(key, destination) {

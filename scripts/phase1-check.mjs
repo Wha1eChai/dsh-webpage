@@ -5,6 +5,7 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { runPnpm } from './locate-pnpm.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const coreDir = join(root, 'packages', 'webpage')
@@ -158,9 +159,7 @@ function assertPackedPayload() {
   const directory = mkdtempSync(prefix)
   assert(directory.startsWith(tmpdir()), 'pack temporary directory escaped the system temp root')
   try {
-    const pnpmCli = process.env.npm_execpath
-    assert(typeof pnpmCli === 'string' && pnpmCli.length > 0, 'pnpm did not expose npm_execpath')
-    execFileSync(process.execPath, [pnpmCli, '--dir', coreDir, 'pack', '--pack-destination', directory], { stdio: 'pipe' })
+    runPnpm(['--dir', coreDir, 'pack', '--pack-destination', directory], root, fail)
     const archives = readdirSync(directory).filter(file => file.endsWith('.tgz'))
     assert(archives.length === 1, `expected one packed tarball, found ${archives.length}`)
     const archive = join(directory, archives[0])

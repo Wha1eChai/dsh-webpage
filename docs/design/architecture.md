@@ -10,6 +10,29 @@ The approved workspace is a private root workspace with one future-publishable c
 
 Phase 0 consumes no generic Resource, ACL, Space, Link, Supervisor, federation, marketplace, or second extension-registry abstraction. Those concerns are outside this architecture.
 
+## Ownership inventory
+
+What this bundle actually owns, stated as "remove it and what breaks", because the optional `/ui` kit is routinely mistaken for the substance:
+
+| Owned | Removing it costs |
+| --- | --- |
+| Registry and identity: ID grammar, duplicate detection, deterministic ordering, immutable snapshots, provenance, withdrawal on dispose | The catalog. Launcher, Inspector, and any agent-facing enumeration lose their source of truth. This is what makes "App" a noun in the system |
+| Address space: `/apps/<id>/*`, one History controller, deep links surviving refresh, explicit non-App classification | There is no place to go: no deep link, no agent-initiated open, no shareable location |
+| Mounting and slot topology: one `shell.overlay` occupant, the keyed `webpage.app` declaration, URL-driven selection, owner props, App-declared extension points with enforcement | A registered component has no way to become a mounted window |
+| Failure domain: per-App error boundary plus lazy body | One bad App takes the desktop with it |
+| Chrome and the preservation guarantee: surfaces, Escape, History close, dialog semantics, and the conversation staying mounted with its state | Apps become full-screen interruptions instead of windows |
+| Shared human/agent address space: `open_app` plus an inert suggestion card over the same `PagesService` | Agents can describe a destination but cannot take anyone there |
+| The authoring contract: types, versioned guide, executable checks, template, skill | Every App reinvents the idioms and breaks independently on the next upstream bump |
+| The optional `/ui` kit | Apps look inconsistent. Nothing else |
+
+The negative space is part of the definition. This bundle owns no store or installer ([ADR 0006](../adr/0006-webpage-is-a-windowing-system-not-a-store.md)), no scheduler ([ADR 0007](../adr/0007-automations-are-trigger-to-agent-loop.md)), no runtime wrapper over Cordis ([ADR 0008](../adr/0008-contract-over-wrapper.md)), no proxy for foreign origins ([ADR 0009](../adr/0009-apps-do-not-proxy-foreign-origins.md)), no process supervision, no persistence or resource model, no authorization, and no second router.
+
+**The removability test.** The question that decides whether a contribution oversteps is not "did it add a layer" but "does removing it leave DSH unchanged". Removing this bundle from a profile leaves the harness running exactly as before; Apps that depended on it simply stay inactive, which is Cordis's designed behavior for a missing dependency, not an invention of this project. Two concrete corollaries, both of which this project violated once and corrected: a plugin must not make its own dependencies a precondition for someone else's boot (no hard Host `inject` of optional peers), and it must not statically import an optional package on the boot path.
+
+Failure-domain ownership follows the same line. This bundle owns the failure domain of UI it renders — a React boundary around components inside its own subtree. It does not own plugin failure: a throwing `apply()`, a client module that fails to import, or a fiber that settles FAILED belongs to Cordis and surfaces in the harness's own boot report.
+
+`/apps` is a claimed namespace, and the claim is recorded here rather than left implicit: no upstream mechanism grants a plugin a top-level SPA path, so a future collision with an upstream `/apps` would be this project's problem to resolve. The prefix is one parser constant today; after publication it becomes a breaking change for saved links, agent conventions, and documentation.
+
 ## Public metadata contract
 
 The browser service is exposed as `ctx.pages`. It is a dsh-webpage-owned Cordis service, not an upstream DSH service. Its public data contract is metadata-only:

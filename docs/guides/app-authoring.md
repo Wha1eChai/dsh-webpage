@@ -119,7 +119,39 @@ No-op without `ctx`. Try `inject`, then fall back to direct registration. Never 
 
 The loopback fence and JSON helpers in `dsh-usage-app/src/http.ts` are a reference implementation, not part of the contract. One consumer; rule of three per [ADR 0008](../adr/0008-contract-over-wrapper.md).
 
-## 8. Run the conformance checks
+## 8. Heavy service Apps
+
+An App that manages a local binary or daemon splits into two halves that never merge:
+
+| Half | Owns |
+| --- | --- |
+| Host | Install, start, stop, credentials, readiness, allowlisted loopback routes or Typert remotes |
+| Window | Current state, the next action, a linear first run — not a vendor management console |
+
+First run is App-internal state, not a new `surface`. Shape it as a stepper in `/ui` (see [ui-kit-gaps](../research/ui-kit-gaps.md)): install/start → authenticate → apply configuration → one probe that proves the service works → dismiss. Advanced pages come later and separately. A wizard layered on an existing multi-page console is a symptom, not a fix ([heavy-service-apps](../research/heavy-service-apps.md)).
+
+### Host-to-window transport
+
+Pick by criteria, not by mandate:
+
+| Channel | Prefer when | Tradeoffs |
+| --- | --- | --- |
+| Typert Remote | Typed, closed-set RPC; mutations with structured errors | Code generation; couples to the remote registry; scope creep shows up as remote count |
+| Host `webServer.register` + loopback fence | Read-heavy JSON, streaming, plain `fetch` from the browser | App writes its own fence; see `dsh-usage-app/src/http.ts` + `src/index.ts` (**reference**, not contract — rule of three) |
+
+Many remotes for a short golden path is a scope problem, not a transport problem.
+
+### Agent tools
+
+The kernel ships one platform tool: `open_app` in `packages/webpage/src/tools.ts`. Tools registered on the Host land in the global agent catalog every session sees. Do not mint per-App tool sets; ask for a kernel capability instead ([heavy-service-apps](../research/heavy-service-apps.md), consensus item 6).
+
+### Foreign origins
+
+An App must not proxy or mount a foreign HTTP server into the DSH origin — not a managed subprocess console, not a remote service. Host-owned routes only. See [ADR 0009](../adr/0009-apps-do-not-proxy-foreign-origins.md).
+
+Cordis traps for the Host half stay in [§7](#7-host-half).
+
+## 9. Run the conformance checks
 
 Every App repo carries `--lint` / `--pack` checks (today `scripts/check.mjs`, being extracted to `@wha1echai/dsh-app-check`, whose major version tracks this contract version). `--pack` asserts the packed tarball equals an exact allowlist. The allowlist is per-repo config, not doctrine.
 
@@ -151,7 +183,7 @@ test: {
 },
 ```
 
-## 9. Publish checklist
+## 10. Publish checklist
 
 - No `prepare` / install build script on the published package if you can avoid it (`allowBuilds` friction).
 - Manifest declares `dsh.client.platform: web`, `dsh.bundle.patch`, and `exports["./package.json"]`.

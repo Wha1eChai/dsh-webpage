@@ -27,9 +27,11 @@ dsh-webpage 是全端 agentOS 里的**窗口系统与地址空间**，不是 IDE
 | --- | --- | --- |
 | Agent 地址空间 | 第一刀是 `open_app` tool + 建议卡：Webpage 现有 Host 行注册 `ctx.tools` 的 `open_app`（`inject: ['tools']`），`execute` 只校验并返回 `{ appId, path }`；client 用 `conversationEvents` 把 `tool/result` fold 成惰性建议卡，人点击才 `ctx.pages.open()`（回放安全、不夺屏）。`list_apps` 活目录等 client→Host 镜像（第二刀）；先用 runtime skill 讲地址空间约定。禁改上游：不加自定义 session 事件（持久化拒日志）、不动 `remote-event` 闭集名单、不走 MCP。依据：[agent-tool-surface-rc6.md](../research/agent-tool-surface-rc6.md) | 真实会话里 agent 调 `open_app` → 对话出现 Usage 建议卡 → 点击打开 panel、对话不丢；刷新回放不自动开窗；不新增第二路由、不暴露安装面 |
 | 一致性套件抽取 | 从三份 `scripts/check.mjs` 提炼共享检查器（三次法则已满足），sibling 仓库只留配置 | 三个 App 仓库跑同一套件全绿 |
-| 官方模板指定 | 新开公开模板仓 `dsh-app-template`（`examples/reference-app` 保持验收夹具身份；模板取其 client 骨架 + usage 的 Host 惯用法），黑话内嵌为注释（lazy body、soft-get、`ctx.inject(['webServer'])`、INSERT-only patch、`codeSplitting: false`）。依据：[conformance-kit-extraction.md](../research/conformance-kit-extraction.md) 模板节 | 陌生 agent session 只喂公开文档，独立产出过套件的 App |
+| 官方模板指定 | 新开公开模板仓 `dsh-app-template`（`examples/reference-app` 保持验收夹具身份；模板取其 client 骨架 + usage 的 Host 惯用法），黑话内嵌为注释（lazy body、soft-get、`ctx.inject(['webServer'])`、INSERT-only patch、`codeSplitting: false`）。**重服务衍生：** Host 半边骨架（loopback fence、四路由量级，参考 `dsh-usage-app`）+ worked 首跑 stepper 示例。依据：[conformance-kit-extraction.md](../research/conformance-kit-extraction.md) 模板节、[heavy-service-apps.md](../research/heavy-service-apps.md) | 陌生 agent session 只喂公开文档，独立产出过套件的 App |
 | 合同版本化 | `docs/guides/app-authoring.md` 顶部标合同版本；rc 升级 = 合同版本 +1 + 套件更新 | 版本号与检查套件同步发布 |
 | boot 零砖回归 | render 崩、`apply()` 抛、patch 写错三种姿势下 `dsh web` 必须能起 | crash-app 现有回归 + 套件 patch 卫生检查常驻 |
+| 重服务 App 作者节 | [app-authoring.md §8](../guides/app-authoring.md#8-heavy-service-apps)：Host/窗口 split、首跑形状、传输准则、agent 工具 footprint；[heavy-service-apps.md](../research/heavy-service-apps.md) 案例 | 已写入（2026-08-17） |
+| ADR 0009 记录 | [0009-apps-do-not-proxy-foreign-origins.md](../adr/0009-apps-do-not-proxy-foreign-origins.md)：App 不代理外部 origin | 已接受（2026-08-17） |
 
 **短期愿望：第一个不是我们写的 App。** 前置条件是分发——npm / awesome / Discussion 草稿已备好（`docs/drafts/`），发布按钮只能由人按。
 
@@ -41,10 +43,14 @@ dsh-webpage 是全端 agentOS 里的**窗口系统与地址空间**，不是 IDE
 
 按优先级：
 
+**重服务路径（Gateway 摩擦报告衍生，2026-08-17）：** `/ui` 首跑 stepper 原语（App 内部线性流程，非 kernel `surface`）；见 [heavy-service-apps.md](../research/heavy-service-apps.md)、[ui-kit-gaps.md](../research/ui-kit-gaps.md)。
+
 1. **活过一次 rc 升级（必答题，时间不由我们选）。** rc.6 → rc.7 时执行第一次「合同版本升级演练」：合同版本 +1、套件更新、三个 sibling App 跑套件、机械修改列清单。目标：作者只需跑一次检查，不需要读内核 diff。这是「不被上游改崩」承诺的兑现方式。
 2. **旗舰组合反哺合同。** Automations recipe App（ADR 0007：trigger + prompt + 权限边界 → 新 Session）在树外推进，其无人值守身份、Host 半边惯用法的第三次重复会决定下一批可抽取项。附带甜点：**App 间深链**（Usage 的某一天 → 打开对应 session），只是 URL 约定，不是新机制。
 3. **多端寄宿演示。** 同一 profile 手机浏览器打开，零代码改动，一张截图兑现 web 优先的承诺。做成 demo，不立工程项。
 4. **分发铺开。** 人工发布后跟进 awesome PR / Discussion / npm 正式化；差异化（Agent 用户）立住之前不催量。
+
+5. **Launcher 行尾 badge slot（重服务唯一 genuine kernel 项）。** 每个 App keyed slot 供就绪/错误等自描述指示；遵循 [ADR 0004](../adr/0004-inspector-panes-are-slot-contributions.md) owner-props 先例，不扩展 `AppDescriptor`。见 [heavy-service-apps.md](../research/heavy-service-apps.md)。
 
 中期指标：三个 sibling App 无改动（或仅清单内机械改动）通过 rc.7 套件；真实会话中 agent 打开 App 的动作出现在日常使用里。
 
@@ -71,7 +77,7 @@ dsh-webpage 是全端 agentOS 里的**窗口系统与地址空间**，不是 IDE
 
 ## 常设不做清单
 
-商店与安装面（ADR 0006）、调度器与第三套 cron（ADR 0007）、运行时封装层与 DSL（ADR 0008）、桌面壳、提前的 Resource/Grant/Space、fork 官方 UI 包、自动发布。
+商店与安装面（ADR 0006）、调度器与第三套 cron（ADR 0007）、运行时封装层与 DSL（ADR 0008）、**不代理外部 origin（ADR 0009）**、桌面壳、提前的 Resource/Grant/Space、fork 官方 UI 包、自动发布。
 
 ## 治理纪律
 

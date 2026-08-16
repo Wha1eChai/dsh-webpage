@@ -153,7 +153,7 @@ Cordis traps for the Host half stay in [§7](#7-host-half).
 
 ## 9. Run the conformance checks
 
-Every App repo carries `--lint` / `--pack` checks (today `scripts/check.mjs`, being extracted to `@wha1echai/dsh-app-check`, whose major version tracks this contract version). `--pack` asserts the packed tarball equals an exact allowlist. The allowlist is per-repo config, not doctrine.
+Every App repo carries `--lint` / `--pack` checks. They live in `@wha1echai/dsh-app-check`, whose major version tracks this contract version; the repo keeps a thin `scripts/check.mjs` wrapper plus a `dsh-app-check.config.mjs`. `--pack` asserts the packed tarball equals an exact allowlist. The allowlist is per-repo config, not doctrine.
 
 `packageManager` is pinned `pnpm@11.7.0`. Nested `pnpm run` on some machines resolves pnpm `11.0.9`; the check scripts fall back through Corepack. Do not produce release tarballs with a mismatched pnpm.
 

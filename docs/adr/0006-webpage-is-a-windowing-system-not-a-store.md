@@ -4,7 +4,7 @@ Status: Accepted for dsh-webpage 0.4 planning.
 
 ## Context
 
-By 2026-08-15 the community had built a dozen plugin storefronts in two days. Official discovery remains the GitHub topic `dsh-plugin`; the reusable installable feed is awesome-dsh-plugin's `plugins.json` (548 entries); most in-app "Plugin Market" UIs are skins of that feed, and every honest one ultimately re-invokes `dsh plugin add` ([ecosystem synthesis](../research/dsh-plugin-ecosystem-2026-08-15.md)).
+By 2026-08-15 the community had built a dozen plugin storefronts in two days. Official discovery remains the GitHub topic `dsh-plugin`; the reusable installable feed is awesome-dsh-plugin's `plugins.json` (548 entries); most in-app "Plugin Market" UIs are skins of that feed, and every honest one ultimately re-invokes `dsh plugin add`.
 
 The pressure on this project was to become another catalog: index community plugins, list them as Apps, add badges. The ecosystem research shows that would duplicate existing storefronts, inherit topic spam (~3,000 tagged repos, many not plugins), and turn Webpage into a second plugin manager — the exact failure ADR 0001 forbids.
 

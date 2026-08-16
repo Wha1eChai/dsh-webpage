@@ -6,7 +6,7 @@ Status: Accepted for dsh-webpage 0.5 planning.
 
 Phase 0.4 shipped `dsh-automations-app` as a Webpage panel over `titanwings/dsh-automation` `#v0.1.5`. The panel lists/pauses/runs-now only if that Host is installed; the App itself does not start an Agent. A follow-up plan proposed replacing the remote with a first-party once/interval/daily/weekly scheduler that mints a new Session per due time.
 
-Jobs App and the session/job-count Usage App were already judged to have no practical value. Standalone scheduled tasks were judged the same way. A first-party check of Codex, Claude Code, and Cursor ([research note](../research/agent-loop-and-peer-automations.md)) agrees.
+Jobs App and the session/job-count Usage App were already judged to have no practical value. Standalone scheduled tasks were judged the same way. A first-party check of Codex, Claude Code, and Cursor agrees.
 
 DSH already has three clock-adjacent surfaces:
 

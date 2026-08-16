@@ -128,7 +128,7 @@ An App that manages a local binary or daemon splits into two halves that never m
 | Host | Install, start, stop, credentials, readiness, allowlisted loopback routes or Typert remotes |
 | Window | Current state, the next action, a linear first run — not a vendor management console |
 
-First run is App-internal state, not a new `surface`. Shape it as a stepper in `/ui` (see [ui-kit-gaps](../research/ui-kit-gaps.md)): install/start → authenticate → apply configuration → one probe that proves the service works → dismiss. Advanced pages come later and separately. A wizard layered on an existing multi-page console is a symptom, not a fix ([heavy-service-apps](../research/heavy-service-apps.md)).
+First run is App-internal state, not a new `surface`. Shape it as a linear stepper: install/start → authenticate → apply configuration → one probe that proves the service works → dismiss. Advanced pages come later and separately. A wizard layered on an existing multi-page console is a symptom, not a fix.
 
 ### Host-to-window transport
 
@@ -143,7 +143,7 @@ Many remotes for a short golden path is a scope problem, not a transport problem
 
 ### Agent tools
 
-The kernel ships one platform tool: `open_app` in `packages/webpage/src/tools.ts`. Tools registered on the Host land in the global agent catalog every session sees. Do not mint per-App tool sets; ask for a kernel capability instead ([heavy-service-apps](../research/heavy-service-apps.md), consensus item 6).
+The kernel ships one platform tool: `open_app` in `packages/webpage/src/tools.ts`. Tools registered on the Host land in the global agent catalog every session sees. Do not mint per-App tool sets; ask for a kernel capability instead.
 
 ### Foreign origins
 

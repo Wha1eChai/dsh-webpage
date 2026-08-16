@@ -42,21 +42,11 @@ A Pack is a curated composition of existing plugins and configuration, analogous
 ## Documents
 
 - [Domain language](./CONTEXT.md)
-- [v0.1 execution plan](./docs/plan/phase-0.1-addressable-apps.md)
-- [v0.2 App kernel plan](./docs/plan/phase-0.2-app-kernel.md)
-- [v0.3 surfaces and UI kit plan](./docs/plan/phase-0.3-app-surfaces-and-ui-kit.md)
-- [v0.4 failure domain and flagship Apps](./docs/plan/phase-0.4-failure-domain-and-flagship-apps.md)
 - [Authoring guide](./docs/guides/app-authoring.md) — the versioned authoring contract (contract version 1)
 - [App authoring skill](./.cursor/skills/dsh-app-authoring/SKILL.md) — agent-facing entry point to the same contract
-- [Phase 0.4 demo script](./docs/demo/phase-0.4-demo.md)
-- [Phase 0.5 demo script](./docs/demo/phase-0.5-demo.md)
-- [Agent loop and peer automations](./docs/research/agent-loop-and-peer-automations.md)
 - [Architecture and public contract](./docs/design/architecture.md)
 - [Package topology](./docs/design/package-topology.md)
 - [Capability dependency map and evolution plan](./docs/design/dependency-map.md)
-- [Testing strategy and evidence](./docs/testing.md)
-- [Phase 4 verification evidence](./docs/evidence/phase4-verification.md)
-- [Phase 5 verification evidence](./docs/evidence/phase5-verification.md)
 - [ADR: Apps are plugin contributions](./docs/adr/0001-apps-are-plugin-contributions.md)
 - [ADR: App UI composes through DSH slots](./docs/adr/0002-app-ui-composes-through-dsh-slots.md)
 - [ADR: Publish App navigation on ctx.pages](./docs/adr/0003-publish-pages-navigation.md)
@@ -65,8 +55,9 @@ A Pack is a curated composition of existing plugins and configuration, analogous
 - [ADR: Webpage is a windowing system, not a store](./docs/adr/0006-webpage-is-a-windowing-system-not-a-store.md)
 - [ADR: Automations are trigger → agent loop](./docs/adr/0007-automations-are-trigger-to-agent-loop.md)
 - [ADR: Contract over wrapper](./docs/adr/0008-contract-over-wrapper.md)
-- [Roadmap (2026-08, 0.6 and beyond)](./docs/plan/roadmap-2026-08.md)
-- [Current handoff](./HANDOFF.md)
+- [ADR: Apps do not proxy foreign origins](./docs/adr/0009-apps-do-not-proxy-foreign-origins.md)
+
+Phase plans, verification records, research notes, and the cross-session handoff live in a separate private repository. They describe how this project is run rather than how to build on it; anything an App author needs graduates into the documents above.
 
 ## The repository family
 
@@ -83,9 +74,9 @@ This repository is the **platform**: the kernel, its documentation, the authorin
 
 ## Current status
 
-v0.1 through Phase 0.5 are accepted. Phase 0.6 stamps authoring contract version 1 and makes agents first-class users of the address space: the kernel Host half registers an `open_app` tool, and the client renders it as an inert suggestion card that navigates only when a human clicks it ([evidence](./docs/evidence/phase-0.6-verification.md)). The conformance checks are extracted into `@wha1echai/dsh-app-check`. Standalone cron is explicitly not an Automations App ([ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md)); the platform ships contract carriers rather than a runtime wrapper ([ADR 0008](./docs/adr/0008-contract-over-wrapper.md)).
+v0.1 through Phase 0.5 are accepted. Phase 0.6 stamps authoring contract version 1 and makes agents first-class users of the address space: the kernel Host half registers an `open_app` tool, and the client renders it as an inert suggestion card that navigates only when a human clicks it. The conformance checks ship as `@wha1echai/dsh-app-check`, whose major version tracks the contract version. Standalone cron is explicitly not an Automations App ([ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md)); the platform ships contract carriers rather than a runtime layer ([ADR 0008](./docs/adr/0008-contract-over-wrapper.md)).
 
-Gateway wrapping of CLIProxyAPI is paused. The supported deployment remains root-path-only and shared Cordis HMR remains intentionally disabled. Implementation and evidence status are tracked in the phase plans under [docs/plan](./docs/plan/), the records under [docs/evidence](./docs/evidence/), the [roadmap](./docs/plan/roadmap-2026-08.md), and `HANDOFF.md`.
+Every phase is verified against a real profile: unit coverage, real Loader integration, packed-payload equality, an external CLI install, and browser acceptance on a running Web shell. The supported deployment remains root-path-only and shared Cordis HMR remains intentionally disabled.
 
 Known gaps are recorded rather than implied: the contract has never survived an upstream DSH bump, nothing is published to npm, and every verification so far has run on a single machine without CI.
 

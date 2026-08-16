@@ -19,7 +19,7 @@ dsh-webpage is a windowing system for the DeepSeek Harness, not a store and not 
 
 - **Building or changing an App** (usually a sibling repo like `../dsh-usage-app`) → follow the workflow below.
 - **Changing the kernel** (`packages/webpage`) → higher bar: 100% per-file coverage, boot-path safety, exact packed allowlists in `scripts/phase1-check.mjs` and `scripts/phase4-pack-verify.mjs`. Read [docs/design/architecture.md](../../../docs/design/architecture.md) first.
-- **Just exploring what the platform can do** → read the capability menu, then [docs/plan/roadmap-2026-08.md](../../../docs/plan/roadmap-2026-08.md).
+- **Just exploring what the platform can do** → read the capability menu below, then [docs/design/architecture.md](../../../docs/design/architecture.md).
 
 ## Capability menu
 
@@ -95,11 +95,10 @@ Fix and re-run until green. Per-repo config lives in `dsh-app-check.config.mjs` 
 
 ## Verification bar
 
-An App ships when: unit tests pass with the repo's declared coverage thresholds, `--lint` and `--pack` are green, the tarball installs into a profile, and the App opens from the launcher with the conversation still mounted. Evidence conventions: [docs/testing.md](../../../docs/testing.md).
+An App ships when: unit tests pass with the repo's declared coverage thresholds, `--lint` and `--pack` are green, the tarball installs into a profile, and the App opens from the launcher with the conversation still mounted. The first three are the author's own gate; the profile install and browser check belong to whoever composes the profile.
 
 ## Deeper references (read when relevant)
 
-- Agent tool surface and Host↔browser seams: [docs/research/agent-tool-surface-rc6.md](../../../docs/research/agent-tool-surface-rc6.md)
-- Host API shapes (webServer / credentials / sessionPersistence): [docs/evidence/phase-0.5-usage-api-spike.md](../../../docs/evidence/phase-0.5-usage-api-spike.md)
-- Kit extraction and per-repo config schema: [docs/research/conformance-kit-extraction.md](../../../docs/research/conformance-kit-extraction.md)
+- Host half traps, transport criteria, heavy services: [app-authoring.md](../../../docs/guides/app-authoring.md) §7 and §8
+- What this bundle owns, and the removability test: [docs/design/architecture.md](../../../docs/design/architecture.md)
 - Domain language (App, Contribution, Pack, Surface…): [CONTEXT.md](../../../CONTEXT.md)

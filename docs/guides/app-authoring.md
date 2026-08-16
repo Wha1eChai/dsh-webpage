@@ -179,6 +179,9 @@ Every App repo carries `--lint` / `--pack` checks. They live in `@dshapps/app-ch
 | `noAdjacentCheckout` | No source file (including README) may reference an adjacent DeepSeek Harness checkout path |
 | `noForbiddenUi` | No `react-router`, `tailwindcss`, or `@mui/*` imports |
 | `noPrepare` | No `prepare` / install build scripts on the published package (`allowBuilds` friction) |
+| `bundlePatch` | App package owns `dsh.bundle.patch: ./cordis.patch.yml` and the patch inserts only this plugin. Heavy-service Bundles that keep the patch on a sibling pack package turn this off |
+| `loaderPreset` | `tsdown.client.ts` lives next to the App package and sets `codeSplitting: false`. Monorepos that keep the Loader preset at the workspace root turn this off; `--pack` still checks the built client for the Loader handoff |
+| `applyOnlyExport` | Node entry exports only `apply`. Host-service packages that also publish a public API turn this off; `apply` itself remains required |
 
 See [`dsh-app-check/README.md`](https://github.com/Wha1eChai/dsh-app-check) for the full `require` list.
 

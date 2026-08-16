@@ -57,7 +57,7 @@ Progress:
 - [ ] 1. Read the contract: docs/guides/app-authoring.md (all sections)
 - [ ] 2. Copy a working shape
 - [ ] 3. Client half: descriptor + lazy body, dual registration
-- [ ] 4. Host half (only if you need keys/ledgers/routes): follow guide §7 exactly
+- [ ] 4. Host half (only if you need keys/ledgers/routes): follow guide §8 exactly
 - [ ] 5. Wire dsh-app-check and make --lint / --pack green
 - [ ] 6. Unit tests green; pack the tarball
 ```
@@ -99,6 +99,6 @@ An App ships when: unit tests pass with the repo's declared coverage thresholds,
 
 ## Deeper references (read when relevant)
 
-- Host half traps, transport criteria, heavy services: [app-authoring.md](../../../docs/guides/app-authoring.md) §7 and §8
+- Host half traps, transport criteria, heavy services: [app-authoring.md](../../../docs/guides/app-authoring.md) §8 and §9
 - What this bundle owns, and the removability test: [docs/design/architecture.md](../../../docs/design/architecture.md)
 - Domain language (App, Contribution, Pack, Surface…): [CONTEXT.md](../../../CONTEXT.md)

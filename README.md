@@ -80,13 +80,16 @@ Every phase is verified against a real profile: unit coverage, real Loader integ
 
 Known gaps are recorded rather than implied: the contract has never survived an upstream DSH bump, nothing is published to npm, and every verification so far has run on a single machine without CI.
 
-## Install the preview
+## Install
 
-Not published to npm yet, so the kernel is distributed as a GitHub Release tarball. DSH `0.1.0-rc.6`, Node `^22.19.0 || >=24.0.0`, and a root-mounted Web deployment are required.
+Requirements: DSH `0.1.0-rc.6`, Node `^22.19.0 || >=24.0.0`, and a root-mounted Web deployment.
+
+Nothing is on npm yet, and the existing `v0.1.0` release predates both Phase 0.2 and the `@dshapps` rename, so build the current kernel from source and install the tarball it produces:
 
 ```powershell
-gh release download v0.1.0 --repo Wha1eChai/dsh-webpage --pattern 'dshapps-webpage-0.2.0.tgz'
+corepack pnpm@11.7.0 install
+corepack pnpm@11.7.0 --dir packages/webpage pack
 dsh plugin --profile web add .\dshapps-webpage-0.2.0.tgz
 ```
 
-The release lags the branch while Phase 0.6 settles; build from source for the current kernel. The core package contributes the Webpage substrate and Inspector. The reference fixtures in this repository are `private: true` test packages, not part of the public installation contract.
+A refreshed release and an npm publish are the next distribution steps. The core package contributes the Webpage substrate and the Inspector App; the reference fixtures in this repository are `private: true` test packages, not part of the public installation contract.

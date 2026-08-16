@@ -7,10 +7,10 @@ import {
   waitForVisible,
 } from './support.mjs'
 
-const REFERENCE_ID = 'wha1echai.reference'
+const REFERENCE_ID = 'dshapps.reference'
 const REFERENCE_LABEL = 'Reference App'
 const INSPECTOR_LABEL = 'Webpage'
-const INSPECTOR_PATH = '/apps/wha1echai.webpage'
+const INSPECTOR_PATH = '/apps/dshapps.inspector'
 const REFERENCE_PATH = `/apps/${REFERENCE_ID}`
 const REFERENCE_DETAILS_PATH = `${REFERENCE_PATH}/details`
 
@@ -34,10 +34,10 @@ async function clientRuntimeDiagnostics(page) {
     moduleLoaderKeys: Object.keys(window.__ModuleLoader__ ?? {}),
     pluginResources: performance.getEntriesByType('resource')
       .map(entry => entry.name)
-      .filter(name => name.includes('/plugins/@wha1echai/')),
+      .filter(name => name.includes('/plugins/@dshapps/')),
     pluginScripts: [...document.scripts]
       .map(script => script.src)
-      .filter(src => src.includes('/plugins/@wha1echai/')),
+      .filter(src => src.includes('/plugins/@dshapps/')),
   }))
 }
 
@@ -118,13 +118,13 @@ async function waitForReferencePage(page, pathname, heading) {
 async function inspectorSemanticSnapshot(page) {
   const dialog = page.getByRole('dialog', { name: INSPECTOR_LABEL, exact: true })
   return dialog.evaluate(element => {
-    const card = element.querySelector('[data-app-id="wha1echai.reference"]')
+    const card = element.querySelector('[data-app-id="dshapps.reference"]')
     if (card === null) throw new Error('snapshot cannot find Reference App card')
     const field = name => card.querySelector(`[data-field="${name}"] dd`)?.textContent?.trim() ?? '<missing>'
     const topology = [...element.querySelectorAll('code')].map(node => node.textContent?.trim()).filter(Boolean)
     const topologyRoot = topology.includes('webpage.app') ? 'webpage.app' : (topology[0] ?? '<missing>')
-    const topologyChild = topology.includes('wha1echai.reference.actions')
-      ? 'wha1echai.reference.actions'
+    const topologyChild = topology.includes('dshapps.reference.actions')
+      ? 'dshapps.reference.actions'
       : (topology[1] ?? '<missing>')
     const viewport = `${window.innerWidth}x${window.innerHeight}`
     return [
@@ -149,7 +149,7 @@ async function assertInspectorSemantics(page, dialog, card) {
     'app-id': REFERENCE_ID,
     description: 'A small nested-route App used to verify DSH Webpage composition.',
     order: '10',
-    'source-plugin': '@wha1echai/dsh-webpage-reference-app',
+    'source-plugin': '@dshapps/webpage-reference-app',
     url: REFERENCE_PATH,
     categories: 'reference',
     'slot-status': 'Available',
@@ -161,7 +161,7 @@ async function assertInspectorSemantics(page, dialog, card) {
     assert(actual === expected, `Inspector ${name} expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`)
   }
   assert(await dialog.locator('code').filter({ hasText: /^webpage\.app$/u }).count() === 1, 'Inspector must show the live webpage.app topology root')
-  assert(await dialog.locator('code').filter({ hasText: /^wha1echai\.reference\.actions$/u }).count() === 1, 'Inspector must show the reference child extension slot')
+  assert(await dialog.locator('code').filter({ hasText: /^dshapps\.reference\.actions$/u }).count() === 1, 'Inspector must show the reference child extension slot')
 }
 
 async function assertNoAppOutlet(page, label) {
@@ -183,7 +183,7 @@ async function runScenarios() {
   })
   page.on('requestfailed', request => failedRequests.push(`${request.url()}: ${request.failure()?.errorText ?? 'unknown failure'}`))
   page.on('response', response => {
-    if (response.url().includes('/plugins/@wha1echai/')) pluginResponses.push(`${response.status()} ${response.url()}`)
+    if (response.url().includes('/plugins/@dshapps/')) pluginResponses.push(`${response.status()} ${response.url()}`)
   })
   try {
     assert(profile.dsh.manifest.version === '0.1.0-rc.6', `browser lane launched non-rc.6 DSH: ${profile.dsh.manifest.version}`)
@@ -196,7 +196,7 @@ async function runScenarios() {
     await page.getByRole('button', { name: 'Apps', exact: true }).click()
     const palette = page.getByRole('dialog', { name: 'Apps', exact: true })
     await waitForVisible(page, palette, 'Apps launch panel')
-    await palette.locator('[data-app-id="wha1echai.webpage"]').click()
+    await palette.locator('[data-app-id="dshapps.inspector"]').click()
     const inspector = await waitForInspector(page)
     await assertInspectorSemantics(page, inspector.dialog, inspector.card)
     const actualSnapshot = (await inspectorSemanticSnapshot(page)).trimEnd()
@@ -254,7 +254,7 @@ async function runScenarios() {
     await assertConversationPreserved(page, 'unknown App transition')
 
     // A crashing App degrades in place; chrome and conversation stay up.
-    const crashUrl = sameUrl(baseUrl, '/apps/wha1echai.crash')
+    const crashUrl = sameUrl(baseUrl, '/apps/dshapps.crash')
     await page.evaluate(url => {
       history.pushState(null, '', url)
       window.dispatchEvent(new PopStateEvent('popstate'))
@@ -274,7 +274,7 @@ async function runScenarios() {
 
     // Root-path-only deployment is a negative case: the URL remains untouched
     // and dsh-webpage does not claim the upstream /dsh prefix.
-    const unsupportedBasePath = sameUrl(baseUrl, '/dsh/apps/wha1echai.reference')
+    const unsupportedBasePath = sameUrl(baseUrl, '/dsh/apps/dshapps.reference')
     await page.evaluate(url => {
       history.pushState(null, '', url)
       window.dispatchEvent(new PopStateEvent('popstate'))

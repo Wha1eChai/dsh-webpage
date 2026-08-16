@@ -1,6 +1,6 @@
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
-import type { InspectorPaneSlotProps, WebpageAppSlotProps } from '@wha1echai/dsh-webpage/client'
-import type { AppPage } from '@wha1echai/dsh-webpage/ui'
+import type { InspectorPaneSlotProps, WebpageAppSlotProps } from '@dshapps/webpage/client'
+import type { AppPage } from '@dshapps/webpage/ui'
 import type { ReactNode } from 'react'
 
 /** Compile-only proof that the optional /ui kit is a public export. */

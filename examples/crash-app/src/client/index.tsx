@@ -1,12 +1,12 @@
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
-import type { AppDescriptor } from '@wha1echai/dsh-webpage/client'
+import type { AppDescriptor } from '@dshapps/webpage/client'
 
 import { CrashApp } from './CrashApp.js'
 import { en, zh } from './locales.js'
 
 const descriptor = Object.freeze({
-  id: 'wha1echai.crash',
+  id: 'dshapps.crash',
   label: 'Crash App',
   description: 'Throws on open so the App failure domain can be demonstrated.',
   order: 90,
@@ -16,7 +16,7 @@ const descriptor = Object.freeze({
 const LOCALE_NAMESPACE = 'crash'
 
 /** Stable Loader identity used for Cordis fiber provenance. */
-export const name = '@wha1echai/dsh-webpage-crash-app'
+export const name = '@dshapps/webpage-crash-app'
 
 /** Client services required by the crash App. */
 export const inject = ['pages', 'slots', 'locale']

@@ -100,7 +100,7 @@ class FakeLocale {
 
 describe('client apply composition', () => {
   it('exports a stable Cordis plugin name for diagnostics', () => {
-    expect(name).toBe('@wha1echai/dsh-webpage')
+    expect(name).toBe('@dshapps/webpage')
   })
 
   afterEach(() => window.history.replaceState(null, '', '/'))
@@ -123,11 +123,11 @@ describe('client apply composition', () => {
     } }).pages
 
     expect(locale.registrations.has('webpage')).toBe(true)
-    expect(pages.list.getSnapshot().map(app => app.id)).toEqual(['wha1echai.webpage'])
+    expect(pages.list.getSnapshot().map(app => app.id)).toEqual(['dshapps.inspector'])
     expect(slots.entry('shell.overlay').options.children).toEqual({
       'webpage.app': { kind: 'keyed', scope: 'root' },
     })
-    expect(slots.entry('webpage.app').options.key).toBe('wha1echai.webpage')
+    expect(slots.entry('webpage.app').options.key).toBe('dshapps.inspector')
     expect(slots.entry('webpage.app').options.children).toEqual({
       'webpage.inspector.pane': { kind: 'list', scope: 'root' },
     })
@@ -141,27 +141,27 @@ describe('client apply composition', () => {
       hooks: { apps: { getSnapshot(): readonly RegisteredApp[] } }
       openApp(id: string): void
     })()
-    expect(launcherFace.hooks.apps.getSnapshot().map(app => app.id)).toEqual(['wha1echai.webpage'])
-    launcherFace.openApp('wha1echai.webpage')
-    expect(window.location.pathname).toBe('/apps/wha1echai.webpage')
+    expect(launcherFace.hooks.apps.getSnapshot().map(app => app.id)).toEqual(['dshapps.inspector'])
+    launcherFace.openApp('dshapps.inspector')
+    expect(window.location.pathname).toBe('/apps/dshapps.inspector')
 
     const outletFace = (slots.entry('shell.overlay').options.inject as () => {
       hooks: { route: { getSnapshot(): AppRoute | undefined } }
       navigate(path: string, options?: { search?: string; hash?: string }): void
       close(options?: { replace?: boolean }): void
     })()
-    expect(outletFace.hooks.route.getSnapshot()?.appId).toBe('wha1echai.webpage')
+    expect(outletFace.hooks.route.getSnapshot()?.appId).toBe('dshapps.inspector')
     outletFace.navigate('/nested', { search: '?tab=all', hash: '#top' })
     expect(`${window.location.pathname}${window.location.search}${window.location.hash}`)
-      .toBe('/apps/wha1echai.webpage/nested?tab=all#top')
+      .toBe('/apps/dshapps.inspector/nested?tab=all#top')
     outletFace.close({ replace: true })
     expect(window.location.pathname).toBe('/')
 
     const catalogFace = (slots.entries('webpage.inspector.pane')[0]!.options.inject as () => {
       openApp(id: string): void
     })()
-    catalogFace.openApp('wha1echai.webpage')
-    expect(window.location.pathname).toBe('/apps/wha1echai.webpage')
+    catalogFace.openApp('dshapps.inspector')
+    expect(window.location.pathname).toBe('/apps/dshapps.inspector')
 
     const topologyFace = (slots.entries('webpage.inspector.pane')[1]!.options.inject as () => {
       hooks: { topology: unknown }
@@ -173,24 +173,24 @@ describe('client apply composition', () => {
       resolveApp(id: string): RegisteredApp | undefined
       openApp(id: string, path?: string): void
     })('session-1')
-    expect(openAppFace.resolveApp('wha1echai.webpage')?.label).toBe('Webpage')
+    expect(openAppFace.resolveApp('dshapps.inspector')?.label).toBe('Webpage')
     expect(openAppFace.resolveApp('missing.app')).toBeUndefined()
-    openAppFace.openApp('wha1echai.webpage', '/inspect')
-    expect(window.location.pathname).toBe('/apps/wha1echai.webpage/inspect')
+    openAppFace.openApp('dshapps.inspector', '/inspect')
+    expect(window.location.pathname).toBe('/apps/dshapps.inspector/inspect')
 
     const other = ctx.plugin({
       name: 'otherLauncher',
       inject: ['pages'],
       apply(pluginCtx) {
-        pluginCtx.pages.open('wha1echai.webpage', '/')
+        pluginCtx.pages.open('dshapps.inspector', '/')
       },
     })
     await other.await()
-    expect(window.location.pathname).toBe('/apps/wha1echai.webpage')
+    expect(window.location.pathname).toBe('/apps/dshapps.inspector')
     await other.dispose()
 
     await fiber.dispose()
-    expect(pages.get('wha1echai.webpage')).toBeUndefined()
+    expect(pages.get('dshapps.inspector')).toBeUndefined()
     expect(slots.entries('shell.overlay')).toEqual([])
     expect(slots.entries('webpage.app')).toEqual([])
     expect(slots.entries('webpage.inspector.pane')).toEqual([])

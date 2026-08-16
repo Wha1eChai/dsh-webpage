@@ -58,7 +58,7 @@ async function assertManifest() {
   for (const name of requiredScripts) assert(typeof rootManifest.scripts?.[name] === 'string', `missing root script ${name}`)
 
   const core = await json(coreManifestPath)
-  assert(core.name === '@wha1echai/dsh-webpage', 'core package name changed')
+  assert(core.name === '@dshapps/webpage', 'core package name changed')
   assert(core.private !== true, 'core must remain future-publishable')
   assert(core.dsh?.client?.platform === 'web', 'core dsh.client.platform must be web')
   assert(core.dsh?.bundle?.patch === './cordis.patch.yml', 'core dsh.bundle.patch is missing')
@@ -85,7 +85,7 @@ async function assertManifest() {
     assert(manifest.private === true, `${dir} must be private`)
   }
   const patch = await readFile(join(coreDir, 'cordis.patch.yml'), 'utf8')
-  assert(patch.includes("name: '@wha1echai/dsh-webpage'"), 'core patch must insert the core plugin')
+  assert(patch.includes("name: '@dshapps/webpage'"), 'core patch must insert the core plugin')
 }
 
 async function sourceFiles(dir) {
@@ -125,10 +125,10 @@ async function assertBuilt() {
   const uiPath = join(coreLib, 'ui.js')
   assert(existsSync(nodePath) && existsSync(invariantPath) && existsSync(clientPath) && existsSync(uiPath), 'core Node/invariant/client/ui artifacts are missing; run pnpm build first')
   const consumerRequire = createRequire(join(root, 'examples', 'reference-app', 'probe.mjs'))
-  assert(consumerRequire.resolve('@wha1echai/dsh-webpage') === nodePath, 'core root export does not resolve to lib/index.js')
-  assert(consumerRequire.resolve('@wha1echai/dsh-webpage/invariant') === invariantPath, 'core invariant export does not resolve to lib/invariant.js')
-  assert(consumerRequire.resolve('@wha1echai/dsh-webpage/client') === clientPath, 'core ./client export does not resolve to lib/client.js')
-  assert(consumerRequire.resolve('@wha1echai/dsh-webpage/ui') === uiPath, 'core ./ui export does not resolve to lib/ui.js')
+  assert(consumerRequire.resolve('@dshapps/webpage') === nodePath, 'core root export does not resolve to lib/index.js')
+  assert(consumerRequire.resolve('@dshapps/webpage/invariant') === invariantPath, 'core invariant export does not resolve to lib/invariant.js')
+  assert(consumerRequire.resolve('@dshapps/webpage/client') === clientPath, 'core ./client export does not resolve to lib/client.js')
+  assert(consumerRequire.resolve('@dshapps/webpage/ui') === uiPath, 'core ./ui export does not resolve to lib/ui.js')
   const nodeModule = await import(`${pathToFileURL(nodePath).href}?phase1=${Date.now()}`)
   assert(JSON.stringify(Object.keys(nodeModule).sort()) === '["apply"]', `Node exports must be named apply only, got ${Object.keys(nodeModule)}`)
   const client = await readFile(clientPath, 'utf8')

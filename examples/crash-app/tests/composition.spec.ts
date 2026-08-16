@@ -27,18 +27,18 @@ describe('crash App composition', () => {
 
     apply(ctx as never)
 
-    expect(name).toBe('@wha1echai/dsh-webpage-crash-app')
+    expect(name).toBe('@dshapps/webpage-crash-app')
     expect(inject).toEqual(['pages', 'slots', 'locale'])
     expect(effect).toHaveBeenCalledOnce()
     expect(pageRegister).toHaveBeenCalledWith(expect.objectContaining({
-      id: 'wha1echai.crash',
+      id: 'dshapps.crash',
       label: 'Crash App',
     }))
     expect(localeRegister).toHaveBeenCalledWith('crash', expect.objectContaining({ zh: expect.any(Object), en: expect.any(Object) }))
     expect(slotInject).toHaveBeenCalledWith('webpage.app', expect.any(Function))
     expect(slotRegister).toHaveBeenCalledWith({
       name: 'webpage.app',
-      key: 'wha1echai.crash',
+      key: 'dshapps.crash',
       locale: 'crash',
     }, CrashApp)
 

@@ -1,7 +1,7 @@
 import { chromium } from 'playwright'
 
 const base = 'http://127.0.0.1:11350'
-const usagePath = '/apps/wha1echai.usage'
+const usagePath = '/apps/dshapps.usage'
 
 function fail(message) {
   throw new Error(message)
@@ -33,13 +33,13 @@ try {
 
   await page.getByRole('button', { name: 'Apps', exact: true }).waitFor({ state: 'visible', timeout: 30_000 })
   await page.getByRole('button', { name: 'Apps', exact: true }).click()
-  await page.locator('[data-app-id="wha1echai.usage"]').waitFor({ state: 'visible', timeout: 15_000 })
+  await page.locator('[data-app-id="dshapps.usage"]').waitFor({ state: 'visible', timeout: 15_000 })
   const launcherIds = await page.locator('[data-app-id]').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-app-id')))
-  assert(launcherIds.includes('wha1echai.usage'), `launcher missing Usage: ${JSON.stringify(launcherIds)}`)
-  assert(launcherIds.includes('wha1echai.webpage'), `launcher missing Inspector: ${JSON.stringify(launcherIds)}`)
-  assert(!launcherIds.includes('wha1echai.jobs'), `launcher still lists Jobs: ${JSON.stringify(launcherIds)}`)
-  assert(!launcherIds.includes('wha1echai.automations'), `launcher still lists Automations: ${JSON.stringify(launcherIds)}`)
-  assert(!launcherIds.includes('wha1echai.crash'), `launcher lists crash-app: ${JSON.stringify(launcherIds)}`)
+  assert(launcherIds.includes('dshapps.usage'), `launcher missing Usage: ${JSON.stringify(launcherIds)}`)
+  assert(launcherIds.includes('dshapps.inspector'), `launcher missing Inspector: ${JSON.stringify(launcherIds)}`)
+  assert(!launcherIds.includes('dshapps.jobs'), `launcher still lists Jobs: ${JSON.stringify(launcherIds)}`)
+  assert(!launcherIds.includes('dshapps.automations'), `launcher still lists Automations: ${JSON.stringify(launcherIds)}`)
+  assert(!launcherIds.includes('dshapps.crash'), `launcher lists crash-app: ${JSON.stringify(launcherIds)}`)
   notes.push(`launcher ids: ${launcherIds.join(', ')}`)
 
   await page.goto(new URL(usagePath, base).href, { waitUntil: 'domcontentloaded', timeout: 60_000 })

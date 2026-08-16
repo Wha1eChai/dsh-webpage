@@ -58,9 +58,9 @@ function parsePatch(source) {
 }
 
 const expectedRows = [
-  { id: 'webpage', name: '@wha1echai/dsh-webpage' },
-  { id: 'reference-app', name: '@wha1echai/dsh-webpage-reference-app' },
-  { id: 'reference-extension', name: '@wha1echai/dsh-webpage-reference-extension' },
+  { id: 'webpage', name: '@dshapps/webpage' },
+  { id: 'reference-app', name: '@dshapps/webpage-reference-app' },
+  { id: 'reference-extension', name: '@dshapps/webpage-reference-extension' },
 ]
 
 const source = await readFile(patchPath, 'utf8')

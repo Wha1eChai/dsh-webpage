@@ -41,18 +41,18 @@ describe('open_app tool definition', () => {
     const tool = createOpenAppTool(dshTools)
     expect(tool.name).toBe('open_app')
     expect(tool.description).toContain('suggestion card')
-    expect(tool.description).toContain('wha1echai.usage')
+    expect(tool.description).toContain('dshapps.usage')
 
-    const withoutPath = await tool.execute({ app_id: 'wha1echai.usage' }, fakeExec())
-    expect(withoutPath).toEqual({ appId: 'wha1echai.usage' })
-    expect(tool.output.render({ app_id: 'wha1echai.usage' }, withoutPath)).toEqual([
-      { type: 'text', text: 'Open /apps/wha1echai.usage' },
+    const withoutPath = await tool.execute({ app_id: 'dshapps.usage' }, fakeExec())
+    expect(withoutPath).toEqual({ appId: 'dshapps.usage' })
+    expect(tool.output.render({ app_id: 'dshapps.usage' }, withoutPath)).toEqual([
+      { type: 'text', text: 'Open /apps/dshapps.usage' },
     ])
 
-    const withPath = await tool.execute({ app_id: 'wha1echai.usage', path: '/today' }, fakeExec())
-    expect(withPath).toEqual({ appId: 'wha1echai.usage', path: '/today' })
-    expect(tool.output.render({ app_id: 'wha1echai.usage', path: '/today' }, withPath)).toEqual([
-      { type: 'text', text: 'Open /apps/wha1echai.usage/today' },
+    const withPath = await tool.execute({ app_id: 'dshapps.usage', path: '/today' }, fakeExec())
+    expect(withPath).toEqual({ appId: 'dshapps.usage', path: '/today' })
+    expect(tool.output.render({ app_id: 'dshapps.usage', path: '/today' }, withPath)).toEqual([
+      { type: 'text', text: 'Open /apps/dshapps.usage/today' },
     ])
   })
 
@@ -66,19 +66,19 @@ describe('open_app tool definition', () => {
       name: 'ToolArgsError',
       violations: ['invalid App ID acme'],
     })
-    await expect(tool.execute({ app_id: 'wha1echai.usage', path: 'today' }, fakeExec())).rejects.toMatchObject({
+    await expect(tool.execute({ app_id: 'dshapps.usage', path: 'today' }, fakeExec())).rejects.toMatchObject({
       name: 'ToolArgsError',
       violations: ['invalid App path'],
     })
-    await expect(tool.execute({ app_id: 'wha1echai.usage', path: '//odd' }, fakeExec())).rejects.toMatchObject({
+    await expect(tool.execute({ app_id: 'dshapps.usage', path: '//odd' }, fakeExec())).rejects.toMatchObject({
       name: 'ToolArgsError',
       violations: ['invalid App path'],
     })
-    await expect(tool.execute({ app_id: 'wha1echai.usage', path: '/a/../b' }, fakeExec())).rejects.toMatchObject({
+    await expect(tool.execute({ app_id: 'dshapps.usage', path: '/a/../b' }, fakeExec())).rejects.toMatchObject({
       name: 'ToolArgsError',
       violations: ['invalid App path'],
     })
-    await expect(tool.execute({ app_id: 'wha1echai.usage', path: '/x?tab=1' }, fakeExec())).rejects.toMatchObject({
+    await expect(tool.execute({ app_id: 'dshapps.usage', path: '/x?tab=1' }, fakeExec())).rejects.toMatchObject({
       name: 'ToolArgsError',
       violations: ['invalid App path'],
     })
@@ -146,7 +146,7 @@ describe('Host apply open_app registration', () => {
       },
       logger: { warn },
     }, loadTools))
-    expect(warn).toHaveBeenCalledWith('wha1echai-webpage: inject tools failed: Error: tools not ready')
+    expect(warn).toHaveBeenCalledWith('dshapps-webpage: inject tools failed: Error: tools not ready')
     expect(register).toHaveBeenCalledTimes(1)
   })
 
@@ -174,7 +174,7 @@ describe('Host apply open_app registration', () => {
       await settle(() => apply(toolsContext(register, { logger: { warn } }), load))
       await expect(registerOpenAppTool(toolsContext(register), load)).resolves.toBeUndefined()
       expect(warn).toHaveBeenCalledWith(
-        "wha1echai-webpage: load @deepseek-ai/dsh-tools failed: Error: Cannot find package '@deepseek-ai/dsh-tools'",
+        "dshapps-webpage: load @deepseek-ai/dsh-tools failed: Error: Cannot find package '@deepseek-ai/dsh-tools'",
       )
       expect(register).not.toHaveBeenCalled()
       expect(rejections).toEqual([])

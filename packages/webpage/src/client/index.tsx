@@ -28,10 +28,10 @@ export { APP_SURFACES, resolveAppSurface } from './contract.js'
 export type { WebpageAppSlotProps, InspectorPaneOwner, InspectorPaneSlotProps } from './slots.js'
 
 const LOCALE_NAMESPACE = 'webpage'
-const INSPECTOR_APP_ID = 'wha1echai.webpage'
+const INSPECTOR_APP_ID = 'dshapps.inspector'
 
 /** Stable Cordis fiber name used by provenance and slot diagnostics. */
-export const name = '@wha1echai/dsh-webpage'
+export const name = '@dshapps/webpage'
 
 /**
  * Client services required by the Addressable App foundation.

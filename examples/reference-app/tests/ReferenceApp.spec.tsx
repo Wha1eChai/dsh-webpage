@@ -28,7 +28,7 @@ function props(
   close = vi.fn(),
 ): ReferenceAppProps {
   return {
-    appId: 'wha1echai.reference',
+    appId: 'dshapps.reference',
     appPath,
     search: '',
     hash: '',
@@ -86,7 +86,7 @@ describe('ReferenceApp', () => {
 
     expect(screen.getByRole('button', { name: 'Extension action' })).toBeTruthy()
     expect(renderSlot).toHaveBeenCalledOnce()
-    expect(renderSlot).toHaveBeenCalledWith('wha1echai.reference.actions', { appPath: '/details' })
+    expect(renderSlot).toHaveBeenCalledWith('dshapps.reference.actions', { appPath: '/details' })
   })
 
   it('lazy-loads the reference body through the client entry', async () => {

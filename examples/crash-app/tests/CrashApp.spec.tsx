@@ -5,7 +5,7 @@ import { CrashApp } from '../src/client/CrashApp.js'
 describe('CrashApp', () => {
   it('throws the intentional crash used by the failure-domain demo', () => {
     expect(() => CrashApp({
-      appId: 'wha1echai.crash',
+      appId: 'dshapps.crash',
       appPath: '/',
       search: '',
       hash: '',

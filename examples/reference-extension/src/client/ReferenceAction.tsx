@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import type { ReferenceAppOwner } from '@wha1echai/dsh-webpage-reference-app'
-import type {} from '@wha1echai/dsh-webpage-reference-app/client'
+import type { ReferenceAppOwner } from '@dshapps/webpage-reference-app'
+import type {} from '@dshapps/webpage-reference-app/client'
 
 import { LOCALE_NAMESPACE } from './locales.js'
 import styles from './ReferenceAction.module.css'
 
 /** Props are derived from the reference App's public child-slot declaration. */
-export type ReferenceActionProps = PropsRuntime<'wha1echai.reference.actions'>
+export type ReferenceActionProps = PropsRuntime<'dshapps.reference.actions'>
   & ReferenceAppOwner
   & PropsLocale<typeof LOCALE_NAMESPACE>
 

@@ -6,12 +6,12 @@ import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } 
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const expectedVersion = '0.1.0'
+const expectedVersion = '0.2.0'
 const packageNames = Object.freeze({
-  webpage: '@wha1echai/dsh-webpage',
-  app: '@wha1echai/dsh-webpage-reference-app',
-  extension: '@wha1echai/dsh-webpage-reference-extension',
-  pack: '@wha1echai/dsh-webpage-reference-pack',
+  webpage: '@dshapps/webpage',
+  app: '@dshapps/webpage-reference-app',
+  extension: '@dshapps/webpage-reference-extension',
+  pack: '@dshapps/webpage-reference-pack',
 })
 
 const packageDirectories = Object.freeze({
@@ -315,9 +315,9 @@ function assertPayload(archive, key) {
 
 function assertPackPatch(archive, key) {
   const patch = tarRead(archive, 'package/cordis.patch.yml')
-  assert(patch.includes("name: '@wha1echai/dsh-webpage'"), `${key} packed Pack patch lacks webpage insertion`)
-  assert(patch.includes("name: '@wha1echai/dsh-webpage-reference-app'"), `${key} packed Pack patch lacks reference App insertion`)
-  assert(patch.includes("name: '@wha1echai/dsh-webpage-reference-extension'"), `${key} packed Pack patch lacks reference extension insertion`)
+  assert(patch.includes("name: '@dshapps/webpage'"), `${key} packed Pack patch lacks webpage insertion`)
+  assert(patch.includes("name: '@dshapps/webpage-reference-app'"), `${key} packed Pack patch lacks reference App insertion`)
+  assert(patch.includes("name: '@dshapps/webpage-reference-extension'"), `${key} packed Pack patch lacks reference extension insertion`)
   return patch
 }
 

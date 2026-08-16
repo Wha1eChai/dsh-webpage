@@ -35,7 +35,7 @@ function selector<T>(snapshot: T): SnapshotSelectorHook<T> {
 
 function inspectorProps(renderSlot = vi.fn(() => <p>panes</p>)): InspectorProps {
   return {
-    appId: 'wha1echai.webpage',
+    appId: 'dshapps.inspector',
     appPath: '/',
     search: '',
     hash: '',

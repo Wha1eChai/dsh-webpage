@@ -129,7 +129,7 @@ These capabilities share the same registries and lifecycle path. Implementing th
 
 ### 0.1 — Addressable Apps
 
-Ship the complete first slice above as `@wha1echai/dsh-webpage`, plus private reference App, extension, and Pack fixtures. This establishes the vocabulary, route convention, metadata registry, keyed UI slot, lifecycle behavior, and extension contract that other plugin authors can adopt. The compatibility target is frozen at DSH `0.1.0-rc.6`; upgrades require a separate compatibility pass.
+Ship the complete first slice above as `@dshapps/webpage`, plus private reference App, extension, and Pack fixtures. This establishes the vocabulary, route convention, metadata registry, keyed UI slot, lifecycle behavior, and extension contract that other plugin authors can adopt. The compatibility target is frozen at DSH `0.1.0-rc.6`; upgrades require a separate compatibility pass.
 
 ### 0.2 — Agent-native Resources
 

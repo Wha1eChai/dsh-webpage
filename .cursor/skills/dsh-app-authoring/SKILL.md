@@ -31,7 +31,7 @@ dsh-webpage is a windowing system for the DeepSeek Harness, not a store and not 
 | Crash isolation: a crashed App is a closed window | Automatic (`AppBoundary`); never throw from `apply()` |
 | Agent reach: session agents suggest opening the App via a card | `open_app` tool ships with the kernel; nothing to do per App |
 | Cross-App links | `pages.open(id, path)` — the URL is the data channel |
-| UI kit | optional `@wha1echai/dsh-webpage/ui` value import |
+| UI kit | optional `@dshapps/webpage/ui` value import |
 | Extension points for other plugins | App-declared child slots |
 
 The platform deliberately owns **no** store, scheduler, resource model, or runtime HTTP helpers (ADR [0006](../../../docs/adr/0006-webpage-is-a-windowing-system-not-a-store.md), [0007](../../../docs/adr/0007-automations-are-trigger-to-agent-loop.md), [0008](../../../docs/adr/0008-contract-over-wrapper.md)). App Host halves talk to DSH host services directly.
@@ -40,7 +40,7 @@ The platform deliberately owns **no** store, scheduler, resource model, or runti
 
 An App's own job is **design tokens and layout**. Widget internals are someone else's job. Agents default to hand-rolling; resist it in this order.
 
-**1. Platform primitives — always, for anything they cover.** `@deepseek-ai/dsh-client-ui-primitives` exports `Button` (`ButtonVariant`), `Pill`, `Input`, `StateDot` (`StateDotState`), `Tooltip`, `HoverCard`, `Modal`, `Menu`, `DisclosureRow`, `JsonTree`, `CodeBlock`, `MarkdownText`, and an icon set. Structure comes from `@wha1echai/dsh-webpage/ui` (`AppPage`, `AppList`/`AppRow`, `AppEmpty`, `AppFields`/`AppField`). Both are Loader externals: zero bundle cost and automatic theme fidelity. Verify prop shapes in `deepseek-harness/packages/client/ui-primitives/src/*.tsx`. A hand-rolled button, dot, pill, or tooltip is a defect, not a style choice.
+**1. Platform primitives — always, for anything they cover.** `@deepseek-ai/dsh-client-ui-primitives` exports `Button` (`ButtonVariant`), `Pill`, `Input`, `StateDot` (`StateDotState`), `Tooltip`, `HoverCard`, `Modal`, `Menu`, `DisclosureRow`, `JsonTree`, `CodeBlock`, `MarkdownText`, and an icon set. Structure comes from `@dshapps/webpage/ui` (`AppPage`, `AppList`/`AppRow`, `AppEmpty`, `AppFields`/`AppField`). Both are Loader externals: zero bundle cost and automatic theme fidelity. Verify prop shapes in `deepseek-harness/packages/client/ui-primitives/src/*.tsx`. A hand-rolled button, dot, pill, or tooltip is a defect, not a style choice.
 
 **2. Theme tokens, never literal colors.** Only `--dsw-alias-*` names defined in `deepseek-harness/packages/client/ui-theme/src/styles/design-platform.css`. Read the dark-theme block too — every choice must hold in both. Semantic families: `state-business-primary` / `-tertiary` (accent), `state-success-primary`, `state-error-primary` / `-secondary`, `label-primary` / `-secondary` / `-tertiary` / `-caption` / `-dimmed`, `border-l1`..`l4`, `interactive-bg-hover` / `-active` / `-hover-danger`. Trap: in the light theme `bg-layer-1`, `-layer-2`, and `-layer-3` all resolve to the same white — depth must come from borders and spacing, never from swapping layer tokens.
 
@@ -71,7 +71,7 @@ Progress:
 **Step 5 — conformance feedback loop:**
 
 ```bash
-node scripts/check.mjs --lint   # thin wrapper over @wha1echai/dsh-app-check
+node scripts/check.mjs --lint   # thin wrapper over @dshapps/app-check
 node scripts/check.mjs --pack   # packs and diffs against the exact allowlist
 ```
 

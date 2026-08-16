@@ -58,7 +58,7 @@ async function probe(appId, waitFor) {
   })
 }
 
-const usage = await probe('wha1echai.usage', '[data-day]')
-const notes = await probe('wha1echai.notes', '[data-route]')
+const usage = await probe('dshapps.usage', '[data-day]')
+const notes = await probe('dshapps.notes', '[data-route]')
 console.log(JSON.stringify({ usage, notes }, null, 2))
 await browser.close()

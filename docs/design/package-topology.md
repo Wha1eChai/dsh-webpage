@@ -1,13 +1,13 @@
 # Package topology
 
-This document freezes the Webpage kernel workspace and publish boundary. Phase 5 verified the v0.1 reference package artifacts through a real external rc.6 profile. Phase 0.2 does not add first-party Apps to this repository: the Jobs App is an independent public plugin that peers on `@wha1echai/dsh-webpage`.
+This document freezes the Webpage kernel workspace and publish boundary. Phase 5 verified the v0.1 reference package artifacts through a real external rc.6 profile. Phase 0.2 does not add first-party Apps to this repository: the Jobs App is an independent public plugin that peers on `@dshapps/webpage`.
 
 ## Workspace
 
 ```text
 dsh-webpage/
 ├── packages/
-│   └── webpage/                 # @wha1echai/dsh-webpage
+│   └── webpage/                 # @dshapps/webpage
 │       ├── src/client/registry/ # metadata service and canonical validation
 │       ├── src/client/route/    # pure parser and native-History controller
 │       └── tests/unit/          # package-level Registry and route suites
@@ -27,7 +27,7 @@ Only `packages/webpage` is eligible for a future public release. The root and ev
 
 ## Runtime entries
 
-`@wha1echai/dsh-webpage` has two runtime halves, one optional UI library, and one declarative bundle layer:
+`@dshapps/webpage` has two runtime halves, one optional UI library, and one declarative bundle layer:
 
 | Surface | Source | Published artifact | Module shape |
 | --- | --- | --- | --- |
@@ -55,7 +55,7 @@ The preset produces a closure bundle that hands itself to:
 
 ```ts
 window.__ModuleLoader__.load({
-  id: '@wha1echai/dsh-webpage',
+  id: '@dshapps/webpage',
   factory: (require) => {
     // bundled client module
     return module.exports
@@ -89,7 +89,7 @@ Every addition to this list requires evidence that the module is seeded by the c
 
 ## Example composition
 
-The reference App registers `wha1echai.reference` metadata and its keyed `webpage.app` UI entry in the same Cordis effect. It renders `/` and `/details`, plus a local unavailable/not-found state, and its exported SlotMap contract declares `wha1echai.reference.actions` as `kind: list`, `scope: root`, with owner `{ appPath: string }`. The reference extension exports its standard client `name` and waits for and contributes only to that exact child slot through `ctx.slots.inject()`. The core and reference App also export standard client `name` values for provenance/slot diagnostics; these names are not security identities. The reference Pack is an ordinary `dsh.bundle` patch that composes the core, App, and extension plugin rows; it has no runtime registry, super-plugin, or dependency resolver.
+The reference App registers `dshapps.reference` metadata and its keyed `webpage.app` UI entry in the same Cordis effect. It renders `/` and `/details`, plus a local unavailable/not-found state, and its exported SlotMap contract declares `dshapps.reference.actions` as `kind: list`, `scope: root`, with owner `{ appPath: string }`. The reference extension exports its standard client `name` and waits for and contributes only to that exact child slot through `ctx.slots.inject()`. The core and reference App also export standard client `name` values for provenance/slot diagnostics; these names are not security identities. The reference Pack is an ordinary `dsh.bundle` patch that composes the core, App, and extension plugin rows; it has no runtime registry, super-plugin, or dependency resolver.
 
 ## Build and publication gates
 
@@ -101,9 +101,9 @@ Phase 1 proved frozen installation, build, typecheck, manifest/exports invariant
 
 | Package | Exact files |
 | --- | ---: |
-| `@wha1echai/dsh-webpage` | 24 |
-| `@wha1echai/dsh-webpage-reference-app` | 9 |
-| `@wha1echai/dsh-webpage-reference-extension` | 9 |
-| `@wha1echai/dsh-webpage-reference-pack` | 5 |
+| `@dshapps/webpage` | 24 |
+| `@dshapps/webpage-reference-app` | 9 |
+| `@dshapps/webpage-reference-extension` | 9 |
+| `@dshapps/webpage-reference-pack` | 5 |
 
 The packed manifests rewrite `workspace:*` ranges. The Phase 5 real profile resolves all four tarballs and the Reference Pack patch under disposable repository-external temporary storage, installs only the top-level Reference Pack, preserves base → Web App → Pack bundle order, and reports one ordered core/App/extension row in `dump-config`. The core, reference App, and reference extension manifests export `./package.json` for rc.6 client-module discovery. This compatibility export is required by the package contract and does not warrant an ADR.

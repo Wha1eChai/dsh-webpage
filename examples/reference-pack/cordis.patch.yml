@@ -1,7 +1,7 @@
 - insert:
     - id: webpage
-      name: '@wha1echai/dsh-webpage'
+      name: '@dshapps/webpage'
     - id: reference-app
-      name: '@wha1echai/dsh-webpage-reference-app'
+      name: '@dshapps/webpage-reference-app'
     - id: reference-extension
-      name: '@wha1echai/dsh-webpage-reference-extension'
+      name: '@dshapps/webpage-reference-extension'

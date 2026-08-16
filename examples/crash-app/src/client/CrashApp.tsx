@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { WebpageAppSlotProps } from '@wha1echai/dsh-webpage/client'
+import type { WebpageAppSlotProps } from '@dshapps/webpage/client'
 
 export type CrashAppProps = WebpageAppSlotProps
 

@@ -20,10 +20,10 @@ const expectedDshVersion = '0.1.0-rc.6'
 const profileName = 'web'
 
 export const phase5PackageNames = Object.freeze({
-  webpage: '@wha1echai/dsh-webpage',
-  app: '@wha1echai/dsh-webpage-reference-app',
-  extension: '@wha1echai/dsh-webpage-reference-extension',
-  pack: '@wha1echai/dsh-webpage-reference-pack',
+  webpage: '@dshapps/webpage',
+  app: '@dshapps/webpage-reference-app',
+  extension: '@dshapps/webpage-reference-extension',
+  pack: '@dshapps/webpage-reference-pack',
 })
 
 const packageDirectories = Object.freeze({
@@ -219,7 +219,7 @@ async function resolvedPackageRoot(profileDirectory, tempRoot, packageName) {
   return root
 }
 
-const crashPackageName = '@wha1echai/dsh-webpage-crash-app'
+const crashPackageName = '@dshapps/webpage-crash-app'
 const crashDirectory = join(workspaceRoot, 'examples', 'crash-app')
 
 async function installCrashFixture(tempRoot, pnpm, profileDirectory, runDsh, pnpmOptions) {
@@ -251,9 +251,9 @@ function pnpmPackAt(pnpm, directory, destination) {
 
 function assertDumpConfig(dump) {
   const expectedRows = [
-    "name: '@wha1echai/dsh-webpage'",
-    "name: '@wha1echai/dsh-webpage-reference-app'",
-    "name: '@wha1echai/dsh-webpage-reference-extension'",
+    "name: '@dshapps/webpage'",
+    "name: '@dshapps/webpage-reference-app'",
+    "name: '@dshapps/webpage-reference-extension'",
   ]
   let previous = -1
   for (const row of expectedRows) {
@@ -299,8 +299,8 @@ export async function createPackedWebProfile() {
     runDsh(['plugin', '--profile', profileName, 'add', archives.pack, ...pnpmOptions])
 
     const manifest = JSON.parse(await readFile(join(profileDirectory, 'package.json'), 'utf8'))
-    const whaDependencies = Object.keys(manifest.dependencies ?? {}).filter((name) => name.startsWith('@wha1echai/'))
-    assert(JSON.stringify(whaDependencies) === JSON.stringify([phase5PackageNames.pack]), `top-level plugin dependencies must contain only the Pack, found ${JSON.stringify(whaDependencies)}`)
+    const dshappsDependencies = Object.keys(manifest.dependencies ?? {}).filter((name) => name.startsWith('@dshapps/'))
+    assert(JSON.stringify(dshappsDependencies) === JSON.stringify([phase5PackageNames.pack]), `top-level plugin dependencies must contain only the Pack, found ${JSON.stringify(dshappsDependencies)}`)
     const expectedBundles = ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', phase5PackageNames.pack]
     assert(JSON.stringify(manifest.dsh?.profile?.bundles) === JSON.stringify(expectedBundles), `profile bundles changed: ${JSON.stringify(manifest.dsh?.profile?.bundles)}`)
 

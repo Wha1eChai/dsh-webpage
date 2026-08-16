@@ -1,4 +1,4 @@
-# @wha1echai/dsh-webpage
+# @dshapps/webpage
 
 Addressable Web applications for DeepSeek Harness, delivered as an ordinary external DSH Bundle.
 

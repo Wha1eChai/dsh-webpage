@@ -15,7 +15,7 @@ export function apply(ctx?: WebpageHostContext, loadDshTools?: DshToolsLoader): 
       return
     }
   } catch (error) {
-    ctx.logger?.warn(`wha1echai-webpage: inject tools failed: ${String(error)}`)
+    ctx.logger?.warn(`dshapps-webpage: inject tools failed: ${String(error)}`)
   }
   void registerOpenAppTool(ctx, loadDshTools)
 }

@@ -7,7 +7,7 @@ import type { RegisteredApp } from '../../src/client/contract.js'
 import { AppsLauncher, type AppsLauncherProps } from '../../src/client/launcher/AppsLauncher.js'
 
 const apps: readonly RegisteredApp[] = [
-  { id: 'wha1echai.webpage', label: 'Webpage', description: 'Inspector', categories: ['system'] },
+  { id: 'dshapps.inspector', label: 'Webpage', description: 'Inspector', categories: ['system'] },
   { id: 'acme.catalog', label: 'Catalog', description: 'Products', categories: ['commerce'] },
   { id: 'acme.bare', label: 'Bare' },
 ]
@@ -116,9 +116,9 @@ describe('AppsLauncher', () => {
     fireEvent.click(screen.getByRole('button', { name: '应用' }))
     fireEvent.change(screen.getByRole('searchbox', { name: '筛选应用' }), { target: { value: 'commerce' } })
     expect(screen.getByRole('button', { name: /Catalog/ })).not.toBeNull()
-    fireEvent.change(screen.getByRole('searchbox', { name: '筛选应用' }), { target: { value: 'inspector' } })
-    expect(screen.getByRole('button', { name: /Webpage/ })).not.toBeNull()
-    fireEvent.change(screen.getByRole('searchbox', { name: '筛选应用' }), { target: { value: 'wha1echai.webpage' } })
+    fireEvent.change(screen.getByRole('searchbox', { name: '筛选应用' }), { target: { value: 'products' } })
+    expect(screen.getByRole('button', { name: /Catalog/ })).not.toBeNull()
+    fireEvent.change(screen.getByRole('searchbox', { name: '筛选应用' }), { target: { value: 'dshapps.inspector' } })
     expect(screen.getByRole('button', { name: /Webpage/ })).not.toBeNull()
     fireEvent.change(screen.getByRole('searchbox', { name: '筛选应用' }), { target: { value: 'acme.bare' } })
     expect(screen.getByRole('button', { name: /Bare/ })).not.toBeNull()

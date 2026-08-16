@@ -23,7 +23,7 @@ export type { ClientModuleLoader }
 export const ROOT = resolve(import.meta.dirname, '../..')
 const WEBPAGE_NODE_MODULES = join(ROOT, 'packages', 'webpage', 'node_modules', '@deepseek-ai')
 
-export const CORE_ID = '@wha1echai/dsh-webpage'
+export const CORE_ID = '@dshapps/webpage'
 export const RUNTIME_ID = '@deepseek-ai/dsh-client-runtime'
 export const LOCALE_ID = '@deepseek-ai/dsh-client-locale'
 export const DSH_RC6 = '0.1.0-rc.6'

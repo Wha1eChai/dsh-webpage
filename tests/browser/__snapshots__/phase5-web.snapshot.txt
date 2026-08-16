@@ -1,9 +1,9 @@
 phase5-web semantic snapshot
 viewport: 1680x1000
 locale: en-US
-route: /apps/wha1echai.webpage
+route: /apps/dshapps.inspector
 dialog: App Inspector
-app: wha1echai.reference | Reference App | status=Available | source=@wha1echai/dsh-webpage-reference-app | url=/apps/wha1echai.reference | categories=reference
+app: dshapps.reference | Reference App | status=Available | source=@dshapps/webpage-reference-app | url=/apps/dshapps.reference | categories=reference
 topology: webpage.app
-topology-child: wha1echai.reference.actions
+topology-child: dshapps.reference.actions
 keys: none

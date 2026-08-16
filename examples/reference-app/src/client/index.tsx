@@ -1,7 +1,7 @@
 import { lazy } from 'react'
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
-import type { AppDescriptor } from '@wha1echai/dsh-webpage/client'
+import type { AppDescriptor } from '@dshapps/webpage/client'
 
 import { en, zh } from './locales.js'
 
@@ -12,7 +12,7 @@ export const ReferenceAppBody = lazy(async () => {
 })
 
 const descriptor = Object.freeze({
-  id: 'wha1echai.reference',
+  id: 'dshapps.reference',
   label: 'Reference App',
   description: 'A small nested-route App used to verify DSH Webpage composition.',
   order: 10,
@@ -22,7 +22,7 @@ const descriptor = Object.freeze({
 const LOCALE_NAMESPACE = 'reference'
 
 /** Stable Loader identity used for Cordis fiber provenance. */
-export const name = '@wha1echai/dsh-webpage-reference-app'
+export const name = '@dshapps/webpage-reference-app'
 
 /** Client services required by the reference App. */
 export const inject = ['pages', 'slots', 'locale']
@@ -37,7 +37,7 @@ export function apply(ctx: ClientContext): void {
       key: descriptor.id,
       locale: LOCALE_NAMESPACE,
       children: {
-        'wha1echai.reference.actions': { kind: 'list', scope: 'root' },
+        'dshapps.reference.actions': { kind: 'list', scope: 'root' },
       },
     }, ReferenceAppBody))
 

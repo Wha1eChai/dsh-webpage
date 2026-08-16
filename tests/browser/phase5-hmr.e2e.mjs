@@ -7,8 +7,8 @@ import { createWebHarness, pageDiagnostics, waitForVisible } from './support.mjs
 
 const PROJECT_ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)))
 const REFERENCE_APP_ROOT = join(PROJECT_ROOT, 'examples', 'reference-app')
-const APP_ID = '@wha1echai/dsh-webpage-reference-app'
-const DETAILS_PATH = '/apps/wha1echai.reference/details'
+const APP_ID = '@dshapps/webpage-reference-app'
+const DETAILS_PATH = '/apps/dshapps.reference/details'
 const ORIGINAL_MARKER = 'This is the second local page in the reference App.'
 const REPLACEMENT_MARKER = 'Phase 5 client HMR replacement is live.'
 const CRASH_ERROR_MESSAGE = 'Phase 5 deterministic Reference App render crash.'
@@ -127,7 +127,7 @@ async function configureCopiedTypeScript(fixture) {
     baseUrl: fixture,
     ignoreDeprecations: '6.0',
     paths: {
-      '@wha1echai/dsh-webpage/client': [typePath(join(PROJECT_ROOT, 'packages', 'webpage'), 'client/index.d.ts')],
+      '@dshapps/webpage/client': [typePath(join(PROJECT_ROOT, 'packages', 'webpage'), 'client/index.d.ts')],
       '@deepseek-ai/dsh-client-locale/client': [typePath(join(REFERENCE_APP_ROOT, 'node_modules', '@deepseek-ai', 'dsh-client-locale'), 'client/index.d.ts')],
       '@deepseek-ai/dsh-client-runtime/client': [typePath(join(REFERENCE_APP_ROOT, 'node_modules', '@deepseek-ai', 'dsh-client-runtime'), 'client/index.d.ts')],
       '@deepseek-ai/dsh-client-ui-slots': [typePath(join(REFERENCE_APP_ROOT, 'node_modules', '@deepseek-ai', 'dsh-client-ui-slots'), 'index.d.ts')],
@@ -400,10 +400,10 @@ export async function runHmrScenario() {
     await page.getByRole('button', { name: 'Apps', exact: true }).click()
     const inspector = page.getByRole('dialog', { name: 'Webpage', exact: true })
     await waitForVisible(page, inspector.getByRole('heading', { name: 'App Inspector', exact: true }), 'Inspector after HMR')
-    assert(await inspector.locator('[data-app-id="wha1echai.reference"]').count() === 1, 'Reference App metadata is stale or duplicated after HMR')
-    assert(await inspector.locator('code').filter({ hasText: /^wha1echai\.reference\.actions$/u }).count() === 1, 'Reference App child slot topology is stale or duplicated after HMR')
+    assert(await inspector.locator('[data-app-id="dshapps.reference"]').count() === 1, 'Reference App metadata is stale or duplicated after HMR')
+    assert(await inspector.locator('code').filter({ hasText: /^dshapps\.reference\.actions$/u }).count() === 1, 'Reference App child slot topology is stale or duplicated after HMR')
 
-    const postHmrCard = inspector.locator('[data-app-id="wha1echai.reference"]')
+    const postHmrCard = inspector.locator('[data-app-id="dshapps.reference"]')
     await postHmrCard.getByRole('button', { name: 'Open App', exact: true }).click()
     const reopenedApp = page.getByRole('dialog', { name: 'Reference App', exact: true })
     await waitForVisible(page, reopenedApp.getByRole('heading', { name: 'App home', exact: true }), 'Reference App reopened before crash HMR')
@@ -441,7 +441,7 @@ export async function runHmrScenario() {
     await page.getByRole('button', { name: 'Apps', exact: true }).click()
     const crashInspector = page.getByRole('dialog', { name: 'Webpage', exact: true })
     await waitForVisible(page, crashInspector.getByRole('heading', { name: 'App Inspector', exact: true }), 'Inspector after App crash')
-    assert(await crashInspector.locator('[data-app-id="wha1echai.reference"]').count() === 1, 'Reference App metadata was lost or duplicated after App crash')
+    assert(await crashInspector.locator('[data-app-id="dshapps.reference"]').count() === 1, 'Reference App metadata was lost or duplicated after App crash')
 
     console.log(`Phase 5 real client HMR acceptance passed for ${installedBundle.target}`)
     console.log(`Changed content hash: ${installedBundle.originalRev} -> ${installedBundle.candidateRev}`)

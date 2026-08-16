@@ -13,7 +13,7 @@ Three sibling repos (`dsh-usage-app`, `dsh-jobs-app`, `dsh-automations-app`) car
 ## Decision
 
 1. **The authoring contract has four carriers, in priority order, none on the runtime path:**
-   - **Types**, published from the implementing package (`@wha1echai/dsh-webpage`). Illegal states stay unrepresentable: `register()` accepts metadata only; slots and locales are declared through `declare module` map augmentation. Types are erased at runtime and add zero failure surface.
+   - **Types**, published from the implementing package (`@dshapps/webpage`). Illegal states stay unrepresentable: `register()` accepts metadata only; slots and locales are declared through `declare module` map augmentation. Types are erased at runtime and add zero failure surface.
    - **One official template** embedding the idiom lore as working code: lazy App body, `codeSplitting: false`, soft-`get` of host services, `ctx.inject(['webServer'], …)` waiting, INSERT-only bundle patch.
    - **An executable conformance kit** App authors run in their own repos: manifest pins, source hygiene, Node export shape, client externals, packed-payload allowlist, patch hygiene. Extracted from the three existing `check.mjs` copies.
    - **A thin runtime**: the `/ui` kit and the `AppBoundary` failure domain only. No HTTP helpers, no scheduler, no store.

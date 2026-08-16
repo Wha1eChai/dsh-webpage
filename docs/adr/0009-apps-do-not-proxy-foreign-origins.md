@@ -14,7 +14,7 @@ Reusing a vendor console also fails on its own terms: it assumes its own origin,
 
 ## Decision
 
-1. **An App may serve its own Host-owned routes** on the DSH web server: paths it implements, under a name it owns, with its own fence. Usage's `/api/wha1echai-usage/*` is the reference shape. This is the App's surface, not someone else's.
+1. **An App may serve its own Host-owned routes** on the DSH web server: paths it implements, under a name it owns, with its own fence. Usage's `/api/dshapps-usage/*` is the reference shape. This is the App's surface, not someone else's.
 
 2. **An App must not proxy or mount a foreign HTTP server into the DSH origin.** Not its own managed subprocess, not a remote service, not a vendor console — no reverse proxy, no path mount, no request forwarding that makes another server answer on this origin.
 

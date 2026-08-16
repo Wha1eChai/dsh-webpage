@@ -2,7 +2,7 @@
 
 An App is an addressable contribution made by an ordinary DSH plugin. Installation, versioning, trust, and lifecycle stay with the plugin. This page is the operational contract; [ADR 0001](../adr/0001-apps-are-plugin-contributions.md) and [ADR 0006](../adr/0006-webpage-is-a-windowing-system-not-a-store.md) are the norms.
 
-Target: DSH `0.1.0-rc.6`. Peer `@wha1echai/dsh-webpage` at `0.1.0`.
+Target: DSH `0.1.0-rc.6`. Peer `@dshapps/webpage` at `0.2.0`.
 Contract version: 1. A DSH target bump raises this number; re-run the conformance checks instead of re-reading kernel source ([ADR 0008](../adr/0008-contract-over-wrapper.md)).
 
 ## 1. Register metadata only
@@ -69,13 +69,13 @@ The App's `cordis.patch.yml` inserts **only its own row**:
       name: '@acme/dsh-usage-app'
 ```
 
-Do not override `webpage`, `ui-layout`, or any official core loader id. Do not insert `@wha1echai/dsh-webpage` from an App pack (that duplicates `id: webpage`). Webpage is a file dependency plus override, not a second bundle row from the App.
+Do not override `webpage`, `ui-layout`, or any official core loader id. Do not insert `@dshapps/webpage` from an App pack (that duplicates `id: webpage`). Webpage is a file dependency plus override, not a second bundle row from the App.
 
 ## 6. Locale and kit
 
 Register Chinese and English dictionaries through `ctx.locale`. Chinese is the default.
 
-`@wha1echai/dsh-webpage/ui` is optional (`AppPage`, `AppList` / `AppRow`, `AppEmpty`, `AppFields`, `AppActions`). Import it as a value; every other `@wha1echai/dsh-webpage` specifier stays type-only. The kit is not an argument to `register()`.
+`@dshapps/webpage/ui` is optional (`AppPage`, `AppList` / `AppRow`, `AppEmpty`, `AppFields`, `AppActions`). Import it as a value; every other `@dshapps/webpage` specifier stays type-only. The kit is not an argument to `register()`.
 
 ## 7. Host half
 
@@ -109,7 +109,7 @@ export function apply(ctx?: UsageHostContext): void {
       return
     }
   } catch (error) {
-    ctx.logger?.warn(`wha1echai-usage: inject webServer failed: ${String(error)}`)
+    ctx.logger?.warn(`dshapps-usage: inject webServer failed: ${String(error)}`)
   }
   registerUsageRoutes(ctx)
 }
@@ -153,14 +153,14 @@ Cordis traps for the Host half stay in [§7](#7-host-half).
 
 ## 9. Run the conformance checks
 
-Every App repo carries `--lint` / `--pack` checks. They live in `@wha1echai/dsh-app-check`, whose major version tracks this contract version; the repo keeps a thin `scripts/check.mjs` wrapper plus a `dsh-app-check.config.mjs`. `--pack` asserts the packed tarball equals an exact allowlist. The allowlist is per-repo config, not doctrine.
+Every App repo carries `--lint` / `--pack` checks. They live in `@dshapps/app-check`, whose major version tracks this contract version; the repo keeps a thin `scripts/check.mjs` wrapper plus a `dsh-app-check.config.mjs`. `--pack` asserts the packed tarball equals an exact allowlist. The allowlist is per-repo config, not doctrine.
 
 `packageManager` is pinned `pnpm@11.7.0`. Nested `pnpm run` on some machines resolves pnpm `11.0.9`; the check scripts fall back through Corepack. Do not produce release tarballs with a mismatched pnpm.
 
 Testing:
 
 - Vitest needs the `stub-plain-css` pre-plugin (plain `.css` → `export default {}`).
-- Set `server.deps.inline` for `@deepseek-ai/dsh-client-ui-primitives`, `katex`, and `@wha1echai/dsh-webpage/ui`. Importing DSH primitives pulls katex CSS.
+- Set `server.deps.inline` for `@deepseek-ai/dsh-client-ui-primitives`, `katex`, and `@dshapps/webpage/ui`. Importing DSH primitives pulls katex CSS.
 - Coverage thresholds are the App's own choice, not contract.
 
 ```ts
@@ -177,7 +177,7 @@ plugins: [{
 test: {
   server: {
     deps: {
-      inline: ['@deepseek-ai/dsh-client-ui-primitives', 'katex', '@wha1echai/dsh-webpage/ui'],
+      inline: ['@deepseek-ai/dsh-client-ui-primitives', 'katex', '@dshapps/webpage/ui'],
     },
   },
 },

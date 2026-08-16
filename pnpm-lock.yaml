@@ -56,7 +56,7 @@ importers:
 
   examples/crash-app:
     dependencies:
-      '@wha1echai/dsh-webpage':
+      '@dshapps/webpage':
         specifier: workspace:*
         version: link:../../packages/webpage
     devDependencies:
@@ -78,7 +78,7 @@ importers:
 
   examples/reference-app:
     dependencies:
-      '@wha1echai/dsh-webpage':
+      '@dshapps/webpage':
         specifier: workspace:*
         version: link:../../packages/webpage
     devDependencies:
@@ -100,7 +100,7 @@ importers:
 
   examples/reference-extension:
     dependencies:
-      '@wha1echai/dsh-webpage-reference-app':
+      '@dshapps/webpage-reference-app':
         specifier: workspace:*
         version: link:../reference-app
     devDependencies:
@@ -122,13 +122,13 @@ importers:
 
   examples/reference-pack:
     dependencies:
-      '@wha1echai/dsh-webpage':
+      '@dshapps/webpage':
         specifier: workspace:*
         version: link:../../packages/webpage
-      '@wha1echai/dsh-webpage-reference-app':
+      '@dshapps/webpage-reference-app':
         specifier: workspace:*
         version: link:../reference-app
-      '@wha1echai/dsh-webpage-reference-extension':
+      '@dshapps/webpage-reference-extension':
         specifier: workspace:*
         version: link:../reference-extension
 

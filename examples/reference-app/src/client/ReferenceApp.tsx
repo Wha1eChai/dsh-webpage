@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { PropsLocale, PropsRenderSlots } from '@deepseek-ai/dsh-client-ui-slots'
-import type { AppOwnerProps, WebpageAppSlotProps } from '@wha1echai/dsh-webpage/client'
+import type { AppOwnerProps, WebpageAppSlotProps } from '@dshapps/webpage/client'
 import type { ReferenceAppOwner } from '../index.js'
 
 import type {} from './locales.js'
@@ -8,7 +8,7 @@ import styles from './ReferenceApp.module.css'
 
 export type ReferenceAppProps =
   WebpageAppSlotProps
-  & PropsRenderSlots<'wha1echai.reference.actions'>
+  & PropsRenderSlots<'dshapps.reference.actions'>
   & PropsLocale<'reference'>
 
 type PageProps = Pick<AppOwnerProps, 'navigate' | 'close'> & Pick<ReferenceAppProps, 't'> & {
@@ -92,7 +92,7 @@ function NotFoundPage({ actions, close, navigate, t, appPath }: PageProps): Reac
 /** Render the reference App route and the App-owned extension slot. */
 export function ReferenceApp({ appPath, close, navigate, renderSlot, t }: ReferenceAppProps): ReactNode {
   const owner: ReferenceAppOwner = Object.freeze({ appPath })
-  const actions = renderSlot('wha1echai.reference.actions', owner)
+  const actions = renderSlot('dshapps.reference.actions', owner)
   const pageProps = { actions, appPath, close, navigate, t }
 
   if (appPath === '/') return <RootPage {...pageProps} />

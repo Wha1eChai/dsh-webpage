@@ -26,21 +26,21 @@ describe('reference App composition', () => {
 
     apply(ctx as never)
 
-    expect(name).toBe('@wha1echai/dsh-webpage-reference-app')
+    expect(name).toBe('@dshapps/webpage-reference-app')
     expect(inject).toEqual(['pages', 'slots', 'locale'])
     expect(effect).toHaveBeenCalledOnce()
     expect(pageRegister).toHaveBeenCalledWith(expect.objectContaining({
-      id: 'wha1echai.reference',
+      id: 'dshapps.reference',
       label: 'Reference App',
     }))
     expect(localeRegister).toHaveBeenCalledWith('reference', expect.objectContaining({ zh: expect.any(Object), en: expect.any(Object) }))
     expect(slotInject).toHaveBeenCalledWith('webpage.app', expect.any(Function))
     expect(slotRegister).toHaveBeenCalledWith({
       name: 'webpage.app',
-      key: 'wha1echai.reference',
+      key: 'dshapps.reference',
       locale: 'reference',
       children: {
-        'wha1echai.reference.actions': { kind: 'list', scope: 'root' },
+        'dshapps.reference.actions': { kind: 'list', scope: 'root' },
       },
     }, ReferenceAppBody)
 

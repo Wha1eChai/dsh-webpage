@@ -1,6 +1,6 @@
 {
-  "name": "@wha1echai/dsh-webpage-reference-pack",
-  "version": "0.1.0",
+  "name": "@dshapps/webpage-reference-pack",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "main": "lib/index.js",
@@ -17,9 +17,9 @@
   "files": ["lib/index.js", "lib/types/**/*.d.ts", "cordis.patch.yml"],
   "license": "MIT",
   "dependencies": {
-    "@wha1echai/dsh-webpage": "workspace:*",
-    "@wha1echai/dsh-webpage-reference-app": "workspace:*",
-    "@wha1echai/dsh-webpage-reference-extension": "workspace:*"
+    "@dshapps/webpage": "workspace:*",
+    "@dshapps/webpage-reference-app": "workspace:*",
+    "@dshapps/webpage-reference-extension": "workspace:*"
   },
   "scripts": {
     "build": "tsc -b tsconfig.json && tsdown",

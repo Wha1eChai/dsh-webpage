@@ -39,7 +39,7 @@ async function capture(colorScheme) {
     await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 60_000 })
     await dismissNotice(page)
 
-    await page.goto(`${base}/apps/wha1echai.usage`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
+    await page.goto(`${base}/apps/dshapps.usage`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
     await dismissNotice(page)
     await page.locator('[data-day]').first().waitFor({ state: 'visible', timeout: 60_000 })
     await waitForTheme(page, colorScheme)
@@ -50,7 +50,7 @@ async function capture(colorScheme) {
     notes.push(`usage/${colorScheme}: cell ${cellBox?.width}x${cellBox?.height}, ${providers} provider cards`)
 
     const composer = page.locator('textarea, [contenteditable="true"]').first()
-    await page.goto(`${base}/apps/wha1echai.notes`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
+    await page.goto(`${base}/apps/dshapps.notes`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
     await dismissNotice(page)
     await page.locator('[data-route="/"]').waitFor({ state: 'visible', timeout: 60_000 })
     await waitForTheme(page, colorScheme)
@@ -65,7 +65,7 @@ async function capture(colorScheme) {
     const route = await page.locator('[data-route]').first().getAttribute('data-route')
     notes.push(`notes/${colorScheme}: after save route=${route}`)
 
-    await page.goto(`${base}/apps/wha1echai.notes`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
+    await page.goto(`${base}/apps/dshapps.notes`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
     await dismissNotice(page)
     await page.locator('[data-route="/"]').waitFor({ state: 'visible', timeout: 30_000 })
     await page.waitForTimeout(800)

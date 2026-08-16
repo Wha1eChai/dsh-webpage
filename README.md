@@ -65,16 +65,16 @@ This repository is the **platform**: the kernel, its documentation, the authorin
 
 | Repository | Package | Role |
 | --- | --- | --- |
-| `dsh-webpage` (here) | `@wha1echai/dsh-webpage` | App kernel: registry, routes, outlet, launcher, Inspector, failure domain, `open_app` tool, optional `/ui` kit |
-| `dsh-app-check` | `@wha1echai/dsh-app-check` | Executable authoring-contract checks. Major version tracks the contract version |
-| `dsh-usage-app` | `@wha1echai/dsh-usage-app` | Flagship App: local token heatmap plus Host-proxied provider balances |
-| `dsh-notes-app` | `@wha1echai/dsh-notes-app` | Small addressable notes App; built as a cold-start test of this contract |
-| `dsh-jobs-app` | `@wha1echai/dsh-jobs-app` | Historical example: current-session jobs as a panel. Not in the standing profile |
-| `dsh-automations-app` | `@wha1echai/dsh-automations-app` | Historical example only; superseded by [ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md). Not in the standing profile |
+| `dsh-webpage` (here) | `@dshapps/webpage` | App kernel: registry, routes, outlet, launcher, Inspector, failure domain, `open_app` tool, optional `/ui` kit |
+| `dsh-app-check` | `@dshapps/app-check` | Executable authoring-contract checks. Major version tracks the contract version |
+| `dsh-usage-app` | `@dshapps/usage-app` | Flagship App: local token heatmap plus Host-proxied provider balances |
+| `dsh-notes-app` | `@dshapps/notes-app` | Small addressable notes App; built as a cold-start test of this contract |
+| `dsh-jobs-app` | `@dshapps/jobs-app` | Historical example: current-session jobs as a panel. Not in the standing profile |
+| `dsh-automations-app` | `@dshapps/automations-app` | Historical example only; superseded by [ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md). Not in the standing profile |
 
 ## Current status
 
-v0.1 through Phase 0.5 are accepted. Phase 0.6 stamps authoring contract version 1 and makes agents first-class users of the address space: the kernel Host half registers an `open_app` tool, and the client renders it as an inert suggestion card that navigates only when a human clicks it. The conformance checks ship as `@wha1echai/dsh-app-check`, whose major version tracks the contract version. Standalone cron is explicitly not an Automations App ([ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md)); the platform ships contract carriers rather than a runtime layer ([ADR 0008](./docs/adr/0008-contract-over-wrapper.md)).
+v0.1 through Phase 0.5 are accepted. Phase 0.6 stamps authoring contract version 1 and makes agents first-class users of the address space: the kernel Host half registers an `open_app` tool, and the client renders it as an inert suggestion card that navigates only when a human clicks it. The conformance checks ship as `@dshapps/app-check`, whose major version tracks the contract version. Standalone cron is explicitly not an Automations App ([ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md)); the platform ships contract carriers rather than a runtime layer ([ADR 0008](./docs/adr/0008-contract-over-wrapper.md)).
 
 Every phase is verified against a real profile: unit coverage, real Loader integration, packed-payload equality, an external CLI install, and browser acceptance on a running Web shell. The supported deployment remains root-path-only and shared Cordis HMR remains intentionally disabled.
 
@@ -85,8 +85,8 @@ Known gaps are recorded rather than implied: the contract has never survived an 
 Not published to npm yet, so the kernel is distributed as a GitHub Release tarball. DSH `0.1.0-rc.6`, Node `^22.19.0 || >=24.0.0`, and a root-mounted Web deployment are required.
 
 ```powershell
-gh release download v0.1.0 --repo Wha1eChai/dsh-webpage --pattern 'wha1echai-dsh-webpage-0.1.0.tgz'
-dsh plugin --profile web add .\wha1echai-dsh-webpage-0.1.0.tgz
+gh release download v0.1.0 --repo Wha1eChai/dsh-webpage --pattern 'dshapps-webpage-0.2.0.tgz'
+dsh plugin --profile web add .\dshapps-webpage-0.2.0.tgz
 ```
 
 The release lags the branch while Phase 0.6 settles; build from source for the current kernel. The core package contributes the Webpage substrate and Inspector. The reference fixtures in this repository are `private: true` test packages, not part of the public installation contract.

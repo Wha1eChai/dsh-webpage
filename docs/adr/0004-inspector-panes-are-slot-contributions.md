@@ -8,7 +8,7 @@ The v0.1 Inspector was a single core component: catalog cards and topology tree 
 
 ## Decision
 
-The Inspector App `wha1echai.webpage` declares a list child slot `webpage.inspector.pane` (`kind: list`, `scope: root`, owner `{ appPath: string }`). The Inspector shell only renders chrome and `renderSlot('webpage.inspector.pane', owner)`. Default catalog and topology views are in-tree pane contributions registered by the core plugin. The Inspector remains read-only: panes cannot install, enable, disable, or mutate plugins.
+The Inspector App `dshapps.inspector` declares a list child slot `webpage.inspector.pane` (`kind: list`, `scope: root`, owner `{ appPath: string }`). The Inspector shell only renders chrome and `renderSlot('webpage.inspector.pane', owner)`. Default catalog and topology views are in-tree pane contributions registered by the core plugin. The Inspector remains read-only: panes cannot install, enable, disable, or mutate plugins.
 
 The sidebar launcher does not render a private catalog. After ADR 0005 it opens a list+filter launch panel; Inspector is an ordinary row in that panel, not the launcher destination.
 

@@ -6,7 +6,7 @@ export interface ReferenceAppOwner {
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
     /** Actions contributed by plugins to the reference App. */
-    'wha1echai.reference.actions': {
+    'dshapps.reference.actions': {
       kind: 'list'
       scope: 'root'
       owner: ReferenceAppOwner

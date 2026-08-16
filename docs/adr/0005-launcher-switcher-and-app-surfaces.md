@@ -4,7 +4,7 @@ Status: Accepted for dsh-webpage 0.3.
 
 ## Context
 
-v0.2 made the sidebar Apps control open the Inspector (`ctx.pages.open('wha1echai.webpage')`). That is the wrong user model for an OS-like module host: the global entry should discover and switch Apps, not dump the operator into a diagnostic page. Inspector remains a first-class App; it is no longer the launcher destination.
+v0.2 made the sidebar Apps control open the Inspector (`ctx.pages.open('dshapps.inspector')`). That is the wrong user model for an OS-like module host: the global entry should discover and switch Apps, not dump the operator into a diagnostic page. Inspector remains a first-class App; it is no longer the launcher destination.
 
 Apps also need more than one chrome shape. A job list should keep the conversation visible; a full-screen diagnostic can cover it. The container is an App property, not a second router.
 
@@ -16,9 +16,9 @@ Third-party Apps were assembling one-off layout chrome on `--dsw-*` tokens. The 
 
 2. **`surface` is descriptor metadata.** `AppDescriptor.surface` is `'overlay' | 'panel' | 'modal'`, default `'overlay'`. `register()` stays metadata-only. `AppOutlet` reads the live route plus the registered descriptor and selects one of three shells. All three share the single `RouteController`, History close, Escape, and `role="dialog"`. Unknown Apps keep the default overlay unavailable state. Conversation `[data-conversation-scroll]` stays mounted.
 
-3. **`@wha1echai/dsh-webpage/ui` is optional.** The kit (`AppPage`, `AppList` / `AppRow`, `AppEmpty`, `AppFields`, `AppActions`) wraps DSH primitives and `--dsw-*` tokens. It is not an argument to `register()`, not a second slot system, and not required to contribute an App. Inspector panes and the launch panel are the first in-tree consumers.
+3. **`@dshapps/webpage/ui` is optional.** The kit (`AppPage`, `AppList` / `AppRow`, `AppEmpty`, `AppFields`, `AppActions`) wraps DSH primitives and `--dsw-*` tokens. It is not an argument to `register()`, not a second slot system, and not required to contribute an App. Inspector panes and the launch panel are the first in-tree consumers.
 
-This revises the ADR 0004 sentence that the launcher only opens Inspector, and the ADR 0003 sentence that the launcher is `pages.open('wha1echai.webpage')`.
+This revises the ADR 0004 sentence that the launcher only opens Inspector, and the ADR 0003 sentence that the launcher is `pages.open('dshapps.inspector')`.
 
 ## Consequences
 

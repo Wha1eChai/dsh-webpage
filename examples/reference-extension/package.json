@@ -1,6 +1,6 @@
 {
-  "name": "@wha1echai/dsh-webpage-reference-extension",
-  "version": "0.1.0",
+  "name": "@dshapps/webpage-reference-extension",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "main": "lib/index.js",
@@ -12,14 +12,14 @@
   },
   "dsh": {
     "client": {
-      "inject": ["@wha1echai/dsh-webpage-reference-app"],
+      "inject": ["@dshapps/webpage-reference-app"],
       "platform": "web"
     }
   },
   "files": ["lib/index.js", "lib/client.js", "lib/client.js.map", "lib/types/**/*.d.ts"],
   "license": "MIT",
   "dependencies": {
-    "@wha1echai/dsh-webpage-reference-app": "workspace:*"
+    "@dshapps/webpage-reference-app": "workspace:*"
   },
   "devDependencies": {
     "@deepseek-ai/dsh-client-locale": "0.1.0-rc.6",

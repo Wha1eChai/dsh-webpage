@@ -1,5 +1,5 @@
 /** The extension-owned DSH locale namespace. */
-export const LOCALE_NAMESPACE = 'wha1echai.reference.extension' as const
+export const LOCALE_NAMESPACE = 'dshapps.reference.extension' as const
 
 /** Keys shared by the extension's Chinese and English dictionaries. */
 export type ReferenceExtensionLocaleKey = 'actionTitle' | 'pathLabel'
@@ -21,7 +21,7 @@ export const en: Record<ReferenceExtensionLocaleKey, string> = {
 }
 
 /** Globally namespaced child slot owned and rendered by the reference App. */
-export const ACTION_SLOT = 'wha1echai.reference.actions' as const
+export const ACTION_SLOT = 'dshapps.reference.actions' as const
 
 /** Stable list-entry identity for this extension contribution. */
 export const ACTION_ID = 'reference-extension.action'

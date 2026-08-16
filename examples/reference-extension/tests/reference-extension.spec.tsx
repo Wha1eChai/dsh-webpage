@@ -57,7 +57,7 @@ describe('reference extension', () => {
 
     apply(ctx as never)
 
-    expect(name).toBe('@wha1echai/dsh-webpage-reference-extension')
+    expect(name).toBe('@dshapps/webpage-reference-extension')
     expect(inject).toEqual(['slots', 'locale'])
     expect(effects).toEqual(['dsh-webpage-reference-extension: dictionaries'])
     expect(locales).toEqual([{ namespace: LOCALE_NAMESPACE, dictionaries: { zh, en } }])

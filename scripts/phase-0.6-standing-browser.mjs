@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { chromium } from 'playwright'
 
 const base = 'http://127.0.0.1:11350'
-const usagePath = '/apps/wha1echai.usage'
+const usagePath = '/apps/dshapps.usage'
 const shots = mkdtempSync(join(tmpdir(), 'phase-0.6-browser-'))
 
 function fail(message) {
@@ -51,21 +51,21 @@ try {
 
   await page.getByRole('button', { name: 'Apps', exact: true }).waitFor({ state: 'visible', timeout: 30_000 })
   await page.getByRole('button', { name: 'Apps', exact: true }).click()
-  await page.locator('[data-app-id="wha1echai.usage"]').waitFor({ state: 'visible', timeout: 15_000 })
+  await page.locator('[data-app-id="dshapps.usage"]').waitFor({ state: 'visible', timeout: 15_000 })
   const ids = await page.locator('[data-app-id]').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-app-id')))
-  assert(ids.includes('wha1echai.webpage') && ids.includes('wha1echai.usage'), `launcher regression: ${JSON.stringify(ids)}`)
-  assert(!ids.includes('wha1echai.jobs') && !ids.includes('wha1echai.automations'), `unplugged apps returned: ${JSON.stringify(ids)}`)
+  assert(ids.includes('dshapps.inspector') && ids.includes('dshapps.usage'), `launcher regression: ${JSON.stringify(ids)}`)
+  assert(!ids.includes('dshapps.jobs') && !ids.includes('dshapps.automations'), `unplugged apps returned: ${JSON.stringify(ids)}`)
   notes.push(`launcher ids: ${ids.join(', ')}`)
   await page.keyboard.press('Escape')
 
   const composer = page.locator('textarea, [contenteditable="true"]').first()
   await composer.waitFor({ state: 'visible', timeout: 30_000 })
   await composer.click()
-  await composer.fill('请使用 open_app 工具打开用量应用，app_id 是 wha1echai.usage，不要提问，直接调用。')
+  await composer.fill('请使用 open_app 工具打开用量应用，app_id 是 dshapps.usage，不要提问，直接调用。')
   await page.keyboard.press('Enter')
   notes.push('prompt sent')
 
-  const card = page.locator('[data-open-app="wha1echai.usage"]')
+  const card = page.locator('[data-open-app="dshapps.usage"]')
   const deadline = Date.now() + 180_000
   while (Date.now() < deadline) {
     if (await card.count() > 0 && await card.first().isVisible().catch(() => false)) break
@@ -92,7 +92,7 @@ try {
 
   await page.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 })
   await dismissNotice()
-  await page.locator('[data-open-app="wha1echai.usage"]').first().waitFor({ state: 'visible', timeout: 60_000 })
+  await page.locator('[data-open-app="dshapps.usage"]').first().waitFor({ state: 'visible', timeout: 60_000 })
   await page.waitForTimeout(2_000)
   assert(new URL(page.url()).pathname !== usagePath, 'replayed card must stay inert (no auto-navigation)')
   notes.push('replay: card present after reload, no auto-navigation')

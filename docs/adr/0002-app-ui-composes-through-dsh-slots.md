@@ -28,7 +28,7 @@ App UI is registered separately through the official DSH slot service in the sam
 
 An App may declare child slots as part of its own DSH slot registration. Extensions contribute only to those declared child slots. This is the only App extension mechanism; dsh-webpage does not add a second extension registry.
 
-`RouteController` remains separate from metadata registration. It uses native History API calls and `popstate` without monkey-patching browser history, handles only `/apps/<app-id>/*` at the origin root, and preserves unknown URLs. The Inspector is the read-only App `wha1echai.webpage`.
+`RouteController` remains separate from metadata registration. It uses native History API calls and `popstate` without monkey-patching browser history, handles only `/apps/<app-id>/*` at the origin root, and preserves unknown URLs. The Inspector is the read-only App `dshapps.inspector`.
 
 ## Consequences
 

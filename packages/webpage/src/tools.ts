@@ -6,7 +6,7 @@ export const OPEN_APP_TOOL_NAME = 'open_app'
 const OPEN_APP_DESCRIPTION = [
   'Open an installed Webpage App for the user as a suggestion card.',
   'The user clicks the card to open it; this tool does not navigate by itself.',
-  'Use App IDs from context (for example `wha1echai.usage`).',
+  'Use App IDs from context (for example `dshapps.usage`).',
   'Optional `path` is an in-app route and must be a valid App path.',
 ].join(' ')
 
@@ -36,7 +36,7 @@ export function createOpenAppTool({ defineTool, ToolArgsError }: DshToolsModule)
       app_id: {
         type: 'string',
         required: true,
-        description: 'Installed Webpage App ID, such as `wha1echai.usage`.',
+        description: 'Installed Webpage App ID, such as `dshapps.usage`.',
       },
       path: {
         type: 'string',
@@ -82,13 +82,13 @@ export async function registerOpenAppTool(
   try {
     module = await (loadDshTools ?? loadDshToolsModule)()
   } catch (error) {
-    ctx.logger?.warn(`wha1echai-webpage: load @deepseek-ai/dsh-tools failed: ${String(error)}`)
+    ctx.logger?.warn(`dshapps-webpage: load @deepseek-ai/dsh-tools failed: ${String(error)}`)
     return
   }
   try {
     tools.register(createOpenAppTool(module))
   } catch (error) {
-    ctx.logger?.warn(`wha1echai-webpage: open_app registration failed: ${String(error)}`)
+    ctx.logger?.warn(`dshapps-webpage: open_app registration failed: ${String(error)}`)
   }
 }
 

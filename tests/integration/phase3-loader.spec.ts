@@ -58,7 +58,7 @@ describe('Phase 3 real Cordis Loader client lane', () => {
     await ctx.loader.await()
 
     expect(ctx.pages.list.getSnapshot().map(app => app.id)).toEqual([
-      'wha1echai.webpage',
+      'dshapps.inspector',
       'phase3.alpha',
       'phase3.beta',
     ])
@@ -77,7 +77,7 @@ describe('Phase 3 real Cordis Loader client lane', () => {
 
     expect(ctx.slots.spec('webpage.app')).toMatchObject({ kind: 'keyed', scope: 'root' })
     expect(keyedEntries(ctx).map(entry => entry.options.key)).toEqual([
-      'wha1echai.webpage',
+      'dshapps.inspector',
       'phase3.alpha',
       'phase3.beta',
     ])
@@ -103,14 +103,14 @@ describe('Phase 3 real Cordis Loader client lane', () => {
     await ctx.loader.await()
     expect(ctx.pages.get('phase3.alpha')).toBeUndefined()
     expect(keyedEntries(ctx).map(entry => entry.options.key)).toEqual([
-      'wha1echai.webpage',
+      'dshapps.inspector',
       'phase3.beta',
     ])
 
     await ctx.loader.remove(BETA_ID)
     await ctx.loader.await()
     expect(ctx.pages.get('phase3.beta')).toBeUndefined()
-    expect(keyedEntries(ctx).map(entry => entry.options.key)).toEqual(['wha1echai.webpage'])
+    expect(keyedEntries(ctx).map(entry => entry.options.key)).toEqual(['dshapps.inspector'])
     expect(ctx.slots.spec(BETA_EXTENSION_SLOT)).toBeUndefined()
     expect(extensionEntries(ctx)).toEqual([])
     expect(ctx.loader.resolve(EXTENSION_ID).fiber?.state).toBe(2)
@@ -123,7 +123,7 @@ describe('Phase 3 real Cordis Loader client lane', () => {
       sourcePlugin: 'phase3.fixture.beta',
     })
     expect(keyedEntries(ctx).map(entry => entry.options.key)).toEqual([
-      'wha1echai.webpage',
+      'dshapps.inspector',
       'phase3.beta',
     ])
     expect(ctx.slots.spec(BETA_EXTENSION_SLOT)).toMatchObject({ kind: 'list', scope: 'root' })
@@ -153,7 +153,7 @@ describe('Phase 3 real Cordis Loader client lane', () => {
     expect(ctx.slots.spec('webpage.app')).toMatchObject({ kind: 'keyed', scope: 'root' })
     expect(ctx.loader.resolve(BETA_ID).fiber?.state).toBe(2) // Cordis FiberState.ACTIVE
     expect(keyedEntries(ctx).map(entry => entry.options.key)).toEqual([
-      'wha1echai.webpage',
+      'dshapps.inspector',
       'phase3.beta',
     ])
     expect(keyedEntries(ctx).filter(entry => entry.options.key === 'phase3.beta')).toHaveLength(1)

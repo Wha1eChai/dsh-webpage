@@ -12,7 +12,7 @@ import {
 import type { RegisteredApp } from '../../src/client/contract.js'
 
 const usage: RegisteredApp = {
-  id: 'wha1echai.usage',
+  id: 'dshapps.usage',
   label: 'Usage',
 }
 
@@ -20,7 +20,7 @@ function cardProps(overrides: Partial<OpenAppCardProps> = {}): OpenAppCardProps 
   return {
     callId: 'call-1',
     toolName: 'open_app',
-    block: { argsRaw: JSON.stringify({ app_id: 'wha1echai.usage' }) },
+    block: { argsRaw: JSON.stringify({ app_id: 'dshapps.usage' }) },
     resolveApp: (id: string) => id === usage.id ? usage : undefined,
     openApp: vi.fn(),
     t: key => zh[key],
@@ -30,14 +30,14 @@ function cardProps(overrides: Partial<OpenAppCardProps> = {}): OpenAppCardProps 
 
 describe('readOpenAppSuggestion', () => {
   it('reads running and settled blocks', () => {
-    expect(readOpenAppSuggestion({ argsRaw: '{"app_id":"wha1echai.usage"}' })).toEqual({
-      appId: 'wha1echai.usage',
+    expect(readOpenAppSuggestion({ argsRaw: '{"app_id":"dshapps.usage"}' })).toEqual({
+      appId: 'dshapps.usage',
     })
     expect(readOpenAppSuggestion({
       kind: 'tool-result',
-      call: { argsRaw: '{"app_id":"wha1echai.usage","path":"/today"}' },
+      call: { argsRaw: '{"app_id":"dshapps.usage","path":"/today"}' },
     })).toEqual({
-      appId: 'wha1echai.usage',
+      appId: 'dshapps.usage',
       path: '/today',
     })
   })
@@ -49,8 +49,8 @@ describe('readOpenAppSuggestion', () => {
     expect(readOpenAppSuggestion({ argsRaw: '[]' })).toBeUndefined()
     expect(readOpenAppSuggestion({ argsRaw: '{"path":"/x"}' })).toBeUndefined()
     expect(readOpenAppSuggestion({ argsRaw: '{"app_id":1}' })).toBeUndefined()
-    expect(readOpenAppSuggestion({ argsRaw: '{"app_id":"wha1echai.usage","path":1}' })).toEqual({
-      appId: 'wha1echai.usage',
+    expect(readOpenAppSuggestion({ argsRaw: '{"app_id":"dshapps.usage","path":1}' })).toEqual({
+      appId: 'dshapps.usage',
     })
   })
 })
@@ -68,7 +68,7 @@ describe('OpenAppCard', () => {
 
   it('renders a registered app with a path', () => {
     render(<OpenAppCard {...cardProps({
-      block: { argsRaw: JSON.stringify({ app_id: 'wha1echai.usage', path: '/today' }) },
+      block: { argsRaw: JSON.stringify({ app_id: 'dshapps.usage', path: '/today' }) },
     })} />)
     expect(screen.getByText('Usage')).toBeTruthy()
     expect(screen.getByText('/today')).toBeTruthy()
@@ -100,21 +100,21 @@ describe('OpenAppCard', () => {
     const openApp = vi.fn()
     const props = cardProps({
       openApp,
-      block: { argsRaw: JSON.stringify({ app_id: 'wha1echai.usage', path: '/today' }) },
+      block: { argsRaw: JSON.stringify({ app_id: 'dshapps.usage', path: '/today' }) },
     })
     const { rerender } = render(<OpenAppCard {...props} />)
     rerender(<OpenAppCard {...props} />)
     expect(openApp).not.toHaveBeenCalled()
     fireEvent.click(screen.getByRole('button', { name: '打开应用' }))
     expect(openApp).toHaveBeenCalledTimes(1)
-    expect(openApp).toHaveBeenCalledWith('wha1echai.usage', '/today')
+    expect(openApp).toHaveBeenCalledWith('dshapps.usage', '/today')
   })
 
   it('hides the open button when the path fails the shared grammar', () => {
     const openApp = vi.fn()
     render(<OpenAppCard {...cardProps({
       openApp,
-      block: { argsRaw: JSON.stringify({ app_id: 'wha1echai.usage', path: '//odd' }) },
+      block: { argsRaw: JSON.stringify({ app_id: 'dshapps.usage', path: '//odd' }) },
     })} />)
     expect(screen.getByText('Usage')).toBeTruthy()
     expect(screen.getByText('//odd')).toBeTruthy()

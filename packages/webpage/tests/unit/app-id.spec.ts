@@ -6,7 +6,7 @@ describe('App ID grammar', () => {
   it('accepts two-or-more lower-case dotted segments with interior hyphens', () => {
     expect(isAppId('acme.catalog')).toBe(true)
     expect(isAppId('acme-tools.catalog-v2')).toBe(true)
-    expect(isAppId('wha1echai.usage')).toBe(true)
+    expect(isAppId('dshapps.usage')).toBe(true)
     expect(isAppId('a.b.c')).toBe(true)
   })
 

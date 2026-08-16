@@ -20,7 +20,7 @@ import {
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
-    'wha1echai.reference.actions': {
+    'dshapps.reference.actions': {
       kind: 'list'
       scope: 'root'
       owner: { readonly appPath: string }
@@ -28,10 +28,10 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
   }
 }
 
-const APP_PACKAGE_ID = '@wha1echai/dsh-webpage-reference-app'
-const EXTENSION_PACKAGE_ID = '@wha1echai/dsh-webpage-reference-extension'
-const APP_ID = 'wha1echai.reference'
-const CHILD_SLOT = 'wha1echai.reference.actions'
+const APP_PACKAGE_ID = '@dshapps/webpage-reference-app'
+const EXTENSION_PACKAGE_ID = '@dshapps/webpage-reference-extension'
+const APP_ID = 'dshapps.reference'
+const CHILD_SLOT = 'dshapps.reference.actions'
 
 type ReferenceActionsOwner = NonNullable<SlotMap[typeof CHILD_SLOT]['owner']>
 
@@ -93,7 +93,7 @@ describe('Phase 4 reference App and extension real Cordis Loader lane', () => {
       key: entry.options.key,
       registrant: entry.registrant,
     }))).toEqual([
-      { key: 'wha1echai.webpage', registrant: CORE_ID },
+      { key: 'dshapps.inspector', registrant: CORE_ID },
       { key: APP_ID, registrant: APP_PACKAGE_ID },
     ])
     expect(ctx.slots.spec(CHILD_SLOT)).toEqual({ kind: 'list', scope: 'root' })
@@ -121,7 +121,7 @@ describe('Phase 4 reference App and extension real Cordis Loader lane', () => {
 
     expect(ctx.pages.get(APP_ID)).toBeUndefined()
     expect(keyedEntries(ctx).filter(entry => entry.options.key === APP_ID)).toEqual([])
-    expect(keyedEntries(ctx).map(entry => entry.options.key)).toEqual(['wha1echai.webpage'])
+    expect(keyedEntries(ctx).map(entry => entry.options.key)).toEqual(['dshapps.inspector'])
     expect(ctx.slots.spec(CHILD_SLOT)).toBeUndefined()
     expect(extensionEntries(ctx, CHILD_SLOT)).toEqual([])
     expect(ctx.loader.resolve(EXTENSION_PACKAGE_ID).fiber?.state).toBe(2)

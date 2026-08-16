@@ -119,7 +119,7 @@ These capabilities share the same registries and lifecycle path. Implementing th
 - untrusted client or server code sandboxing;
 - remote Node federation or resource synchronization;
 - collaborative editing, CRDT, or Sheets;
-- supervisor integration;
+- cross-session / Fleet integration;
 - a declarative UI programming language;
 - a second dependency resolver or package manager.
 - patches or required feature work in the upstream DeepSeek Harness repository.
@@ -149,13 +149,13 @@ Group Resources and Grants into local multi-user collaboration boundaries. Authe
 
 ### 0.6 — Link and federation adapters
 
-Expose selected resources or remote tasks between Nodes. Reuse shared discovery and secure transport where appropriate, while keeping supervisor Fleet control and Webpage Resource protocols independent.
+Expose selected resources or remote tasks between Nodes. Reuse shared discovery and secure transport where appropriate, while keeping cross-session Fleet control and Webpage Resource protocols independent.
 
-## Relationship to dsh-supervisor
+## Relationship to dsh-cross-session
 
-`dsh-supervisor` and `dsh-webpage` are independent plugins over the DSH runtime:
+[`dsh-cross-session`](https://github.com/Wha1eChai/dsh-cross-session) (formerly `dsh-supervisor`) and `dsh-webpage` are independent plugins over the DSH runtime:
 
-- Supervisor owns live cross-session agent observation and control.
-- Webpage owns addressable applications and, later, application resources.
-- A future adapter may render Supervisor as an App or carry Fleet operations over a Node link.
+- Cross-session owns same-runtime cross-Session discovery and communication.
+- Webpage owns addressable applications.
+- A future adapter may render cross-session as an App; that is optional, not a kernel dependency.
 - Neither project is a required dependency of the other.

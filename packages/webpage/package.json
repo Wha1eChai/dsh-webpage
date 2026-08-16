@@ -59,7 +59,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Wha1eChai/dsh-webpage.git",
+    "url": "git+https://github.com/dshapps/dsh-webpage.git",
     "directory": "packages/webpage"
   },
   "peerDependencies": {

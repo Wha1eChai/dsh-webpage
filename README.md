@@ -66,14 +66,14 @@ This repository is the **platform**: the kernel, its documentation, the authorin
 | Repository | Package | Role |
 | --- | --- | --- |
 | `dsh-webpage` (here) | `@dshapps/webpage` | App kernel: registry, routes, outlet, launcher, Inspector, failure domain, `open_app` tool, optional `/ui` kit |
-| [`dsh-app-check`](https://github.com/Wha1eChai/dsh-app-check) | `@dshapps/app-check` | Executable authoring-contract checks. Major version tracks the contract version |
-| [`dsh-app-template`](https://github.com/Wha1eChai/dsh-app-template) | `@acme/hello-app` (placeholders) | Official starter: client + Host halves, rename script, conformance wiring |
-| [`dsh-usage-app`](https://github.com/Wha1eChai/dsh-usage-app) | `@dshapps/usage-app` | Flagship App: local token heatmap plus Host-proxied provider balances |
-| [`dsh-notes-app`](https://github.com/Wha1eChai/dsh-notes-app) | `@dshapps/notes-app` | Small addressable notes App; built as a cold-start test of this contract |
-| [`dsh-jobs-app`](https://github.com/Wha1eChai/dsh-jobs-app) | `@dshapps/jobs-app` | Historical example: current-session jobs as a panel. Not in the standing profile |
-| [`dsh-automations-app`](https://github.com/Wha1eChai/dsh-automations-app) | `@dshapps/automations-app` | Historical example only; superseded by [ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md). Not in the standing profile |
+| [`dsh-app-check`](https://github.com/dshapps/dsh-app-check) | `@dshapps/app-check` | Executable authoring-contract checks. Major version tracks the contract version |
+| [`dsh-app-template`](https://github.com/dshapps/dsh-app-template) | `@acme/hello-app` (placeholders) | Official starter: client + Host halves, rename script, conformance wiring |
+| [`dsh-usage-app`](https://github.com/dshapps/dsh-usage-app) | `@dshapps/usage-app` | Flagship App: local token heatmap plus Host-proxied provider balances |
+| [`dsh-notes-app`](https://github.com/dshapps/dsh-notes-app) | `@dshapps/notes-app` | Small addressable notes App; built as a cold-start test of this contract |
+| [`dsh-jobs-app`](https://github.com/dshapps/dsh-jobs-app) | `@dshapps/jobs-app` | Historical example: current-session jobs as a panel. Not in the standing profile |
+| [`dsh-automations-app`](https://github.com/dshapps/dsh-automations-app) | `@dshapps/automations-app` | Historical example only; superseded by [ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md). Not in the standing profile |
 
-Start a new App from [`dsh-app-template`](https://github.com/Wha1eChai/dsh-app-template). [`dsh-gateway`](https://github.com/Wha1eChai/dsh-gateway) is a separate heavy-service consumer of this contract, not a first-party App in this table.
+Start a new App from [`dsh-app-template`](https://github.com/dshapps/dsh-app-template). [`dsh-gateway`](https://github.com/dshapps/dsh-gateway) is a separate heavy-service consumer of this contract, not a first-party App in this table.
 
 ## Current status
 

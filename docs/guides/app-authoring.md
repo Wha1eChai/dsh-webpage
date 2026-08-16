@@ -5,11 +5,11 @@ An App is an addressable contribution made by an ordinary DSH plugin. Installati
 Target: DSH `0.1.0-rc.6`. Peer `@dshapps/webpage` at `0.2.0`.
 Contract version: 1. A DSH target bump raises this number; re-run the conformance checks instead of re-reading kernel source ([ADR 0008](../adr/0008-contract-over-wrapper.md)).
 
-Start from the public template repository [`dsh-app-template`](https://github.com/Wha1eChai/dsh-app-template) when scaffolding a new App.
+Start from the public template repository [`dsh-app-template`](https://github.com/dshapps/dsh-app-template) when scaffolding a new App.
 
 ## 1. Register metadata only
 
-The descriptor is only the metadata half. It lives inside a Cordis client `apply()` that also registers locale dictionaries, the keyed `webpage.app` body (see [§3](#3-lazy-body)), optional child slots, and **reverse-order** cleanup inside one `ctx.effect`. Copy the full client entry from [`dsh-app-template/src/client/index.tsx`](https://github.com/Wha1eChai/dsh-app-template/blob/main/src/client/index.tsx); the fragment below is the descriptor slice only.
+The descriptor is only the metadata half. It lives inside a Cordis client `apply()` that also registers locale dictionaries, the keyed `webpage.app` body (see [§3](#3-lazy-body)), optional child slots, and **reverse-order** cleanup inside one `ctx.effect`. Copy the full client entry from [`dsh-app-template/src/client/index.tsx`](https://github.com/dshapps/dsh-app-template/blob/main/src/client/index.tsx); the fragment below is the descriptor slice only.
 
 `label` is the raw launcher string (Inspector and the Apps list show it as-is). It is **not** a locale key; put translatable copy in `ctx.locale` and use that inside the body.
 
@@ -183,7 +183,7 @@ Every App repo carries `--lint` / `--pack` checks. They live in `@dshapps/app-ch
 | `loaderPreset` | `tsdown.client.ts` lives next to the App package and sets `codeSplitting: false`. Monorepos that keep the Loader preset at the workspace root turn this off; `--pack` still checks the built client for the Loader handoff |
 | `applyOnlyExport` | Node entry exports only `apply`. Host-service packages that also publish a public API turn this off; `apply` itself remains required |
 
-See [`dsh-app-check/README.md`](https://github.com/Wha1eChai/dsh-app-check) for the full `require` list.
+See [`dsh-app-check/README.md`](https://github.com/dshapps/dsh-app-check) for the full `require` list.
 
 ### Unpublished `@dshapps/webpage`
 
@@ -198,7 +198,7 @@ minimumReleaseAgeExclude:
   # …every @deepseek-ai/dsh* pin the App declares
 ```
 
-Copy the exclude list from [`dsh-app-template/pnpm-workspace.yaml`](https://github.com/Wha1eChai/dsh-app-template/blob/main/pnpm-workspace.yaml). `allowFileDshPins` in config stays `false` for publishable Apps.
+Copy the exclude list from [`dsh-app-template/pnpm-workspace.yaml`](https://github.com/dshapps/dsh-app-template/blob/main/pnpm-workspace.yaml). `allowFileDshPins` in config stays `false` for publishable Apps.
 
 ### `packedAllowlist`
 

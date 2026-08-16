@@ -1,5 +1,5 @@
 # @dshapps/webpage
 
-Addressable Web applications for DeepSeek Harness, delivered as an ordinary external DSH Bundle.
+Addressable Web applications for DeepSeek Harness, delivered as an ordinary external DSH plugin.
 
-Version 0.1 is distributed as a GitHub Release tarball. The repository README and design documents define the supported contract; no npm release has been made.
+Current version is `0.2.0`. Nothing is on npm yet; pack this package from source (see the [repository README](../../README.md)). The repository README and design documents define the supported contract.

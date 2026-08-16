@@ -66,19 +66,22 @@ This repository is the **platform**: the kernel, its documentation, the authorin
 | Repository | Package | Role |
 | --- | --- | --- |
 | `dsh-webpage` (here) | `@dshapps/webpage` | App kernel: registry, routes, outlet, launcher, Inspector, failure domain, `open_app` tool, optional `/ui` kit |
-| `dsh-app-check` | `@dshapps/app-check` | Executable authoring-contract checks. Major version tracks the contract version |
-| `dsh-usage-app` | `@dshapps/usage-app` | Flagship App: local token heatmap plus Host-proxied provider balances |
-| `dsh-notes-app` | `@dshapps/notes-app` | Small addressable notes App; built as a cold-start test of this contract |
-| `dsh-jobs-app` | `@dshapps/jobs-app` | Historical example: current-session jobs as a panel. Not in the standing profile |
-| `dsh-automations-app` | `@dshapps/automations-app` | Historical example only; superseded by [ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md). Not in the standing profile |
+| [`dsh-app-check`](https://github.com/Wha1eChai/dsh-app-check) | `@dshapps/app-check` | Executable authoring-contract checks. Major version tracks the contract version |
+| [`dsh-app-template`](https://github.com/Wha1eChai/dsh-app-template) | `@acme/hello-app` (placeholders) | Official starter: client + Host halves, rename script, conformance wiring |
+| [`dsh-usage-app`](https://github.com/Wha1eChai/dsh-usage-app) | `@dshapps/usage-app` | Flagship App: local token heatmap plus Host-proxied provider balances |
+| [`dsh-notes-app`](https://github.com/Wha1eChai/dsh-notes-app) | `@dshapps/notes-app` | Small addressable notes App; built as a cold-start test of this contract |
+| [`dsh-jobs-app`](https://github.com/Wha1eChai/dsh-jobs-app) | `@dshapps/jobs-app` | Historical example: current-session jobs as a panel. Not in the standing profile |
+| [`dsh-automations-app`](https://github.com/Wha1eChai/dsh-automations-app) | `@dshapps/automations-app` | Historical example only; superseded by [ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md). Not in the standing profile |
+
+Start a new App from [`dsh-app-template`](https://github.com/Wha1eChai/dsh-app-template). [`dsh-gateway`](https://github.com/Wha1eChai/dsh-gateway) is a separate heavy-service consumer of this contract, not a first-party App in this table.
 
 ## Current status
 
 v0.1 through Phase 0.5 are accepted. Phase 0.6 stamps authoring contract version 1 and makes agents first-class users of the address space: the kernel Host half registers an `open_app` tool, and the client renders it as an inert suggestion card that navigates only when a human clicks it. The conformance checks ship as `@dshapps/app-check`, whose major version tracks the contract version. Standalone cron is explicitly not an Automations App ([ADR 0007](./docs/adr/0007-automations-are-trigger-to-agent-loop.md)); the platform ships contract carriers rather than a runtime layer ([ADR 0008](./docs/adr/0008-contract-over-wrapper.md)).
 
-Every phase is verified against a real profile: unit coverage, real Loader integration, packed-payload equality, an external CLI install, and browser acceptance on a running Web shell. The supported deployment remains root-path-only and shared Cordis HMR remains intentionally disabled.
+Every phase is verified against a real profile: unit coverage, real Loader integration, packed-payload equality, an external CLI install, and browser acceptance on a running Web shell. CI runs typecheck, lint, unit tests, build, and pack verification on Ubuntu and Windows. The packed-profile install that needs the external DSH CLI stays a local gate. The supported deployment remains root-path-only and shared Cordis HMR remains intentionally disabled.
 
-Known gaps are recorded rather than implied: the contract has never survived an upstream DSH bump, nothing is published to npm, and every verification so far has run on a single machine without CI.
+Known gaps are recorded rather than implied: the contract has never survived an upstream DSH bump, and nothing is published to npm.
 
 ## Install
 

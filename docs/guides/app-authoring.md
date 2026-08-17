@@ -1,11 +1,13 @@
 # Authoring a Webpage App
 
-An App is an addressable contribution made by an ordinary DSH plugin. Installation, versioning, trust, and lifecycle stay with the plugin. This page is the operational contract; [ADR 0001](../adr/0001-apps-are-plugin-contributions.md) and [ADR 0006](../adr/0006-webpage-is-a-windowing-system-not-a-store.md) are the norms.
+An App is an addressable contribution made by an ordinary DSH plugin. Installation, versioning, trust, and lifecycle stay with the plugin. You are writing a **window**, not another sidebar plugin. This page is the operational contract; [ADR 0001](../adr/0001-apps-are-plugin-contributions.md) and [ADR 0006](../adr/0006-webpage-is-a-windowing-system-not-a-store.md) are the norms.
+
+The URL `/apps/<id>/*` is the product. A person can refresh it or send it. A session agent can pass it to `open_app`. Another agent that can reach the same host can open it and see the same state.
 
 Target: DSH `0.1.0-rc.6`. Peer `@dshapps/webpage` at `0.2.0`.
 Contract version: 1. A DSH target bump raises this number; re-run the conformance checks instead of re-reading kernel source ([ADR 0008](../adr/0008-contract-over-wrapper.md)).
 
-Start from the public template repository [`dsh-app-template`](https://github.com/dshapps/dsh-app-template) when scaffolding a new App.
+Start from the public template repository [`dsh-app-template`](https://github.com/dshapps/dsh-app-template) when scaffolding a new App. If you already have a suite of plugins that is one workbench, register one App and put the rest in child slots instead of a fourth repo that only runs `dsh plugin add`.
 
 ## 1. Register metadata only
 

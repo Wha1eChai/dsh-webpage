@@ -26,6 +26,10 @@ _Avoid_: Plugin, bundle, website
 A stable, globally namespaced identity for an App from which its default route mount is derived.
 _Avoid_: Display name, arbitrary URL
 
+**Address**:
+The URL `/apps/<app-id>/*` on the host that is serving the Web UI. A person can bookmark it or send it. A session agent passes it to `open_app`. Any other agent that can reach the same host can open it and see the same state.
+_Avoid_: Ephemeral chat card, widget without a path
+
 **Page**:
 A navigable view within an App's owned route subtree.
 _Avoid_: App, installable page
